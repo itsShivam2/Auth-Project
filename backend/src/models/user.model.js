@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -50,6 +51,9 @@ const userSchema = new mongoose.Schema(
       enum: ["regular"],
       default: "regular",
     },
+    refreshToken: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
@@ -60,5 +64,31 @@ userSchema.pre("save", async function (next) {
   }
   next();
 });
+
+
+// Method to generate access token
+userSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
+    {
+      userId: this._id,
+      email: this.email,
+      username: this.username,
+      firstName: this.firstName,
+      lastName: this.lastName,
+      role: this.role,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRATION,
+    }
+  );
+};
+
+// Method to generate refresh token
+userSchema.methods.generateRefreshToken = function () {
+  return jwt.sign({ userId: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRATION,
+  });
+};
 
 export const User = mongoose.model("User", userSchema);

@@ -1,8 +1,8 @@
 import React from 'react'
-
+import Layout from "../../components/layout/Layout";
 function Checkout() {
   return (
-    <div>Checkout</div>
+    <div><Layout>Checkout</Layout></div>
   )
 }
 

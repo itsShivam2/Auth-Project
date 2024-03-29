@@ -1,8 +1,8 @@
 import React from 'react'
-
+import Layout from "../../components/layout/Layout";
 function Admin() {
   return (
-    <div>Admin</div>
+    <div><Layout>Admin</Layout></div>
   )
 }
 

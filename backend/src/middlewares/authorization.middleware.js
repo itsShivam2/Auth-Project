@@ -1,10 +1,11 @@
-export const authorize = (allowedRoles) => (req, res, next) => {
+export const authorizeAdmin = (req, res, next) => {
     try {
-        // Check if user has required role
-        if (!allowedRoles.includes(req.user.role)) {
-            return res.status(403).json({ message: 'Forbidden: Insufficient permissions' });
+        // Check if the user is an admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Forbidden: Access restricted to admins' });
         }
 
+        // If the user is an admin, proceed to the next middleware/route handler
         next();
     } catch (error) {
         console.error(error);

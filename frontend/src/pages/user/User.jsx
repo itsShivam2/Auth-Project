@@ -1,41 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Layout from "../../components/layout/Layout";
 
-const UserProfile = () => {
+const User = () => {
   const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // Retrieve token from wherever it's stored (e.g., cookies)
-        const accessToken = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('accessToken='))
-          ?.split('=')[1];
-
-        if (!accessToken) {
-          // Handle case where token is not available
-          return;
-        }
-
-        // Make GET request to current-user endpoint with token in headers
         const response = await axios.get(
-          'http://localhost:7400/api/v1/auth/current-user',
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`
-            }
-          }
+          "http://localhost:7400/api/v1/auth/current-user",
+          { withCredentials: true }
         );
-
-        // Set user data in state
-        setUserData(response.data);
+        if (response.ok) {
+          setUserData(response.data);
+        }
       } catch (error) {
-        // Handle error
-        console.error('Error fetching user data:', error);
-      } finally {
-        setLoading(false);
+        setError("Error fetching user data");
+        console.error("Error fetching user data:", error);
       }
     };
 
@@ -44,20 +27,21 @@ const UserProfile = () => {
 
   return (
     <div>
-      <h1>User Profile</h1>
-      {loading ? (
-        <p>Loading...</p>
-      ) : userData ? (
-        <div>
-          <p>Username: {userData.username}</p>
-          <p>Email: {userData.email}</p>
-          {/* Display other user information as needed */}
-        </div>
-      ) : (
-        <p>No user data available</p>
-      )}
+      <Layout>
+        <h1>Profile Page</h1>
+        {error && <div>{error}</div>}
+        {userData && (
+          <div>
+            <p>First Name: {userData.firstName}</p>
+            <p>Last Name: {userData.lastName}</p>
+            <p>Username: {userData.username}</p>
+            <p>Email: {userData.email}</p>
+            {/* Display other user data as needed */}
+          </div>
+        )}
+      </Layout>
     </div>
   );
 };
 
-export default UserProfile;
+export default User;

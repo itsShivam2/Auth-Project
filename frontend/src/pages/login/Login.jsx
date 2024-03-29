@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
-// import { useHistory } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 
 const Login = () => {
-  // const history = useHistory();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -20,23 +20,13 @@ const Login = () => {
     try {
       const response = await axios.post(
         "http://localhost:7400/api/v1/auth/login",
-        formData
+        formData,
+        { withCredentials: true }
       );
       // Handle successful login
       console.log("Login successful", response.data);
-      // Store tokens as cookies
-      // document.cookie = `accessToken=${response.data.accessToken}; path=/; HttpOnly`;
-      // document.cookie = `refreshToken=${response.data.refreshToken}; path=/; HttpOnly`;
-
-      // Retrieve tokens from browser cookies
-      const accessToken = getCookie("accessToken");
-      const refreshToken = getCookie("refreshToken");
-      console.log("Access Token:", accessToken);
-      console.log("Refresh Token:", refreshToken);
-
-      // Redirect to homepage
-      // history.push('/');
-      window.location.href = "/";
+      localStorage.setItem("username", response.data.username);
+      navigate("/");
     } catch (error) {
       // Handle failed login
       console.error("Login error:", error.response.data.message);

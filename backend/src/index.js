@@ -8,7 +8,7 @@ dotenv.config();
 
 // Import routes
 import authRoutes from "./routes/auth.routes.js";
-import userRoutes from "./routes/user.routes.js";
+import productRoutes from "./routes/product.routes.js";
 
 // Create Express app
 const app = express();
@@ -16,6 +16,8 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+//This is used when we want to store some files on our server. We make a public folder which can be accessed by anyone
+app.use(express.static("public"));
 app.use(cookieParser());
 
 //There are 2 ways to use cors
@@ -36,7 +38,7 @@ connectDB();
 
 // Routes
 app.use("/api/v1/auth", authRoutes); // Use /api/v1/auth instead of /api/auth
-app.use("/api/v1/user", userRoutes); // Use /api/v1/user instead of /api/user
+app.use("/api/v1/product", productRoutes); // Use /api/v1/product instead of /api/auth
 
 // Start the server
 const PORT = process.env.PORT || 3000;

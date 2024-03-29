@@ -19,7 +19,7 @@ export const authenticate = async (req, res, next) => {
 
         // Attach user information to request object
         req.user = await User.findById(decoded.userId);
-
+        
         console.log('Authenticated user:', req.user); // Debugging output
 
         next();

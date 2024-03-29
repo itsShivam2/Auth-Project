@@ -1,8 +1,8 @@
 import React from 'react'
-
+import Layout from "../../components/layout/Layout";
 function Cart() {
   return (
-    <div>Cart</div>
+    <div><Layout>Cart</Layout></div>
   )
 }
 
