@@ -92,6 +92,10 @@ export const login = async (req, res) => {
     }
 
     console.log(`User '${username}' logged in successfully`);
+    // Check if the user is admin
+    const isAdmin =
+      username === process.env.ADMIN_USERNAME &&
+      password === process.env.ADMIN_PASSWORD;
 
     // Generate JWT tokens
     // const accessToken = jwt.sign(
@@ -115,15 +119,26 @@ export const login = async (req, res) => {
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
+    if (isAdmin) {
+      res.cookie("isAdmin", true, { httpOnly: true });
+    }
+
     // Update the user's refresh token
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
 
     // Set tokens as HttpOnly cookies
-    res.cookie("accessToken", accessToken, { httpOnly: true, secure: true });
-    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
+    // TODO Later - Set cookies with or without secure flag based on the environment
 
-    res.json({ message: "Login successful", username });
+    res.cookie("accessToken", accessToken, { httpOnly: true });
+    res.cookie("refreshToken", refreshToken, { httpOnly: true });
+
+    res.json({
+      message: "Login successful",
+      username,
+      role: user.role,
+      accessToken,
+    });
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -184,8 +199,8 @@ export const refreshAccessToken = async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     // Send new access token as cookie
-    res.cookie("accessToken", accessToken, { httpOnly: true, secure: true });
-    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
+    res.cookie("accessToken", accessToken, { httpOnly: true });
+    res.cookie("refreshToken", refreshToken, { httpOnly: true });
 
     res.json({
       success: true,
@@ -252,7 +267,9 @@ export const getProfileDetails = async (req, res) => {
     }
 
     // Fetch profile details from the database
-    const profile = await User.findById(profileId).select('-password -refreshToken');;
+    const profile = await User.findById(profileId).select(
+      "-password -refreshToken"
+    );
 
     // Check if the profile exists
     if (!profile) {
@@ -424,4 +441,3 @@ export const isAdmin = (req, res) => {
 //     res.status(500).json({ message: "Internal server error" });
 //   }
 // };
-

@@ -1,10 +1,16 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+// import { useDispatch } from "react-redux";
+import { signup } from "../../redux/user/actions/userActions";
 import Layout from "../../components/layout/Layout";
+import Input from "../../components/input/Input";
+import { FaUser, FaUserCheck, FaLock, FaCalendar } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
 
 const Signup = () => {
   const navigate = useNavigate();
+  // const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -13,6 +19,7 @@ const Signup = () => {
     password: "",
     dateOfBirth: "",
   });
+
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -108,12 +115,20 @@ const Signup = () => {
     }
   };
 
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   dispatch(signup(formData));
+  // };
+
   return (
     <Layout>
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          <div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        <div className="max-w-md w-full space-y-8 bg-white py-8 px-3 shadow-2xl rounded-lg">
+          <div className="flex flex-col items-center">
+            <h1 className="text-4xl text-center font-[Fahkwang] font-bold text-teal-600 px-2 py-2 underline underline-offset-4 mb-4">
+              Trend Bazaar
+            </h1>
+            <h2 className="mt-1 py-2 text-center text-3xl font-extrabold text-gray-900">
               Sign up for an account
             </h2>
           </div>
@@ -126,121 +141,79 @@ const Signup = () => {
 
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm -space-y-px">
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label htmlFor="firstName" className="sr-only">
-                    First Name
-                  </label>
-                  <input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    autoComplete="given-name"
-                    required
-                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                    placeholder="First Name"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                  />
-                  {errors.firstName && (
-                    <p className="text-red-500 mt-1">{errors.firstName}</p>
-                  )}
-                </div>
-                <div>
-                  <label htmlFor="lastName" className="sr-only">
-                    Last Name
-                  </label>
-                  <input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    autoComplete="family-name"
-                    required
-                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                    placeholder="Last Name"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                  />
-                  {errors.lastName && (
-                    <p className="text-red-500 mt-1">{errors.lastName}</p>
-                  )}
-                </div>
-              </div>
-              <div>
-                <label htmlFor="username" className="sr-only">
-                  Username
-                </label>
-                <input
-                  id="username"
-                  name="username"
+              <div className="grid sm:grid-cols-2 gap-2">
+                <Input
+                  id="firstName"
+                  name="firstName"
                   type="text"
-                  autoComplete="username"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Username"
-                  value={formData.username}
+                  autoComplete="given-name"
+                  placeholder="First Name"
+                  value={formData.firstName}
                   onChange={handleChange}
-                />
-                {errors.username && (
-                  <p className="text-red-500 mt-1">{errors.username}</p>
-                )}
-              </div>
-              <div>
-                <label htmlFor="email" className="sr-only">
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Email address"
-                  value={formData.email}
-                  onChange={handleChange}
+                  icon={FaUser}
+                  error={errors.firstName}
                 />
-                {errors.email && (
-                  <p className="text-red-500 mt-1">{errors.email}</p>
-                )}
-              </div>
-              <div>
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  autoComplete="family-name"
+                  placeholder="Last Name"
+                  value={formData.lastName}
+                  onChange={handleChange}
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={handleChange}
+                  icon={FaUser}
+                  error={errors.lastName}
                 />
-                {errors.password && (
-                  <p className="text-red-500 mt-1">{errors.password}</p>
-                )}
               </div>
-              <div>
-                <label htmlFor="dateOfBirth" className="sr-only">
-                  Date of Birth
-                </label>
-                <input
-                  id="dateOfBirth"
-                  name="dateOfBirth"
-                  type="date"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Date of Birth"
-                  value={formData.dateOfBirth}
-                  onChange={handleChange}
-                />
-                {errors.dateOfBirth && (
-                  <p className="text-red-500 mt-1">{errors.dateOfBirth}</p>
-                )}
-              </div>
+              <Input
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
+                placeholder="Username"
+                value={formData.username}
+                onChange={handleChange}
+                required
+                icon={FaUserCheck}
+                error={errors.username}
+              />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                placeholder="Email address"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                icon={MdEmail}
+                error={errors.email}
+              />
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="new-password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                icon={FaLock}
+                error={errors.password}
+              />
+              <Input
+                id="dateOfBirth"
+                name="dateOfBirth"
+                type="date"
+                placeholder="Date of Birth"
+                value={formData.dateOfBirth}
+                onChange={handleChange}
+                required
+                icon={FaCalendar}
+                error={errors.dateOfBirth}
+              />
             </div>
             <div>
               <button

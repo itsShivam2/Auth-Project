@@ -1,24 +1,27 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
-
+import { HomeDesignerSection, ExploreMoreButton } from "./components/Index";
+import { BestFeatureSection } from "../../components/bestFeatureSection/Index";
+import { NewsletterFeatureSection} from "../../components/newsletterFeatureSection/Index";
 function Home() {
   return (
     <Layout>
       <div className="min-h-full">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Link to="/about">About</Link>
-          <Link to="contact">contact</Link>
-          <Link to="signup">signup</Link>
-          <Link to="login">login</Link>
-          <Link to="profile">profile</Link>
-          <Link to="admin">admin</Link>
-          <Link to="products">products</Link>
-          <Link to="add-product">add-product</Link>
-          <Link to="update-profile">update-profile</Link>
-          <Link to="cart">cart</Link>
-          <Link to="checkout">checkout</Link>
-          <Link to="products/:id">products id</Link>
+          <Link to="/contact">contact</Link>
+          <Link to="/signup">signup</Link>
+          <Link to="/login">login</Link>
+          <Link to="/profile">profile</Link>
+          <Link to="/admin">admin</Link>
+          <Link to="/products">products</Link>
+          <Link to="/admin/add-product">add-product</Link>
+          <Link to="/admin/update-product">update-product</Link>
+          <Link to="/update-profile">update-profile</Link>
+          <Link to="/cart">cart</Link>
+          <Link to="/checkout">checkout</Link>
+          <Link to="/products/:id">products id</Link>
         </div>
 
         {/* Hero Section */}
@@ -33,6 +36,10 @@ function Home() {
           </div>
         </section>
 
+        <HomeDesignerSection />
+        <ExploreMoreButton />
+        <BestFeatureSection />
+        <NewsletterFeatureSection/>
         {/* Content Section */}
         <section className="py-16">
           <div className="container mx-auto">

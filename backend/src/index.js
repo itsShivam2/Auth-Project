@@ -37,8 +37,11 @@ app.use(
 connectDB();
 
 // Routes
-app.use("/api/v1/auth", authRoutes); // Use /api/v1/auth instead of /api/auth
-app.use("/api/v1/product", productRoutes); // Use /api/v1/product instead of /api/auth
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/product", productRoutes);
+
+// Handle OPTIONS requests
+app.options("*", cors());
 
 // Start the server
 const PORT = process.env.PORT || 3000;
