@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
+import { Product } from "../models/product.model.js";
 import dotenv from "dotenv";
 
 // Load environment variables from .env file
@@ -97,24 +98,6 @@ export const login = async (req, res) => {
       username === process.env.ADMIN_USERNAME &&
       password === process.env.ADMIN_PASSWORD;
 
-    // Generate JWT tokens
-    // const accessToken = jwt.sign(
-    //   {
-    //     userId: user._id,
-    //     email: user.email,
-    //     username: user.username,
-    //     firstName: user.firstName,
-    //     lastName: user.lastName,
-    //   },
-    //   jwtSecret,
-    //   {
-    //     expiresIn: accessTokenExpiration,
-    //   }
-    // );
-    // const refreshToken = jwt.sign({ userId: user._id }, jwtSecret, {
-    //   expiresIn: refreshTokenExpiration,
-    // });
-
     // Generate new access and refresh tokens
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
@@ -130,8 +113,15 @@ export const login = async (req, res) => {
     // Set tokens as HttpOnly cookies
     // TODO Later - Set cookies with or without secure flag based on the environment
 
-    res.cookie("accessToken", accessToken, { httpOnly: true });
-    res.cookie("refreshToken", refreshToken, { httpOnly: true });
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV != "development",
+    });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV != "development",
+      maxAge: 72 * 60 * 60 * 1000,
+    });
 
     res.json({
       message: "Login successful",
@@ -173,24 +163,6 @@ export const refreshAccessToken = async (req, res) => {
     }
 
     // Generate new access and refresh tokens
-    // const accessToken = jwt.sign(
-    //   {
-    //     userId: user._id,
-    //     email: user.email,
-    //     username: user.username,
-    //     firstName: user.firstName,
-    //     lastName: user.lastName,
-    //   },
-    //   jwtSecret,
-    //   {
-    //     expiresIn: accessTokenExpiration,
-    //   }
-    // );
-    // const refreshToken = jwt.sign({ userId: user._id }, jwtSecret, {
-    //   expiresIn: refreshTokenExpiration,
-    // });
-
-    // Generate new access and refresh tokens
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
@@ -199,8 +171,15 @@ export const refreshAccessToken = async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     // Send new access token as cookie
-    res.cookie("accessToken", accessToken, { httpOnly: true });
-    res.cookie("refreshToken", refreshToken, { httpOnly: true });
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV != "development",
+    });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV != "development",
+      maxAge: 72 * 60 * 60 * 1000,
+    });
 
     res.json({
       success: true,
@@ -216,6 +195,12 @@ export const refreshAccessToken = async (req, res) => {
 // Logout controller
 export const logout = async (req, res) => {
   try {
+    const incomingRefreshToken =
+      req.cookies.refreshToken || req.body.refreshToken;
+
+    if (!incomingRefreshToken) {
+      return res.status(401).json({ message: "Unauthorized request" });
+    }
     // Check if user is authenticated
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -250,24 +235,53 @@ export const logout = async (req, res) => {
 };
 
 // Controller to get current user's profile details
+// export const getProfileDetails = async (req, res) => {
+//   try {
+//     // Extract user ID from request object (from access token)
+//     const userIdFromToken = req.user._id.toString();
+//     console.log("User ID from token:", userIdFromToken);
+
+//     // Extract profile ID from request parameters
+//     const { profileId } = req.params;
+//     console.log("Profile ID from request:", profileId);
+
+//     // Check if the logged-in user matches the profile owner
+//     if (userIdFromToken !== profileId) {
+//       console.log("User is not authorized to access this profile.");
+//       return res.status(403).json({ message: "Forbidden" });
+//     }
+
+//     // Fetch profile details from the database
+//     const profile = await User.findById(profileId).select(
+//       "-password -refreshToken"
+//     );
+
+//     // Check if the profile exists
+//     if (!profile) {
+//       console.log("Profile not found in the database.");
+//       return res.status(404).json({ message: "Profile not found" });
+//     }
+
+//     // Return profile details
+//     res.status(200).json({ profile });
+//   } catch (error) {
+//     console.error("Error fetching profile details:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+// Controller to get current user's profile details
 export const getProfileDetails = async (req, res) => {
   try {
-    // Extract user ID from request object (from access token)
-    const userIdFromToken = req.user._id.toString();
-    console.log("User ID from token:", userIdFromToken);
+    // Extract user ID from the access token cookie
+    const accessToken = req.cookies.accessToken;
 
-    // Extract profile ID from request parameters
-    const { profileId } = req.params;
-    console.log("Profile ID from request:", profileId);
+    // Verify the access token to get user information
+    const decodedToken = jwt.verify(accessToken, process.env.JWT_SECRET);
+    const userIdFromToken = decodedToken.userId;
 
-    // Check if the logged-in user matches the profile owner
-    if (userIdFromToken !== profileId) {
-      console.log("User is not authorized to access this profile.");
-      return res.status(403).json({ message: "Forbidden" });
-    }
-
-    // Fetch profile details from the database
-    const profile = await User.findById(profileId).select(
+    // Fetch profile details from the database using the extracted userId
+    const profile = await User.findById(userIdFromToken).select(
       "-password -refreshToken"
     );
 
@@ -320,124 +334,80 @@ export const updatePassword = async (req, res) => {
   }
 };
 
-// Controller function to check if user is admin
-// export const isAdmin = (req, res) => {
-//   try {
-//     // Extract credentials from request body
-//     const { username, password } = req.body;
-//     console.log("req username: ", username);
-//     console.log("req password: ", password);
-//     // Retrieve admin credentials from environment variables
-//     const adminUsername = process.env.ADMIN_USERNAME;
-//     const adminPassword = process.env.ADMIN_PASSWORD;
+// Get user cart
+export const userCart = async (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Cart fetched",
+    cart
+  });
+};
 
-//     // Check if provided credentials match admin credentials
-//     const isAdmin = username === adminUsername && password === adminPassword;
-
-//     // Return isAdmin status in response
-//     res.status(200).json({ isAdmin });
-//   } catch (error) {
-//     console.error("Error checking admin status:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
-
-// Backend route to check admin status based on username
-export const isAdmin = (req, res) => {
+// Add product to wishlist controller
+export const addToWishlist = async (req, res) => {
   try {
-    // Get the username from the request body
-    const { username } = req.body;
+    const { productId } = req.body;
+    const { user } = req;
 
-    // Retrieve admin username from environment variables
-    const adminUsername = process.env.ADMIN_USERNAME;
+    if (!productId) {
+      return res.status(400).json({ message: "Product ID is required" });
+    }
 
-    // Check if the provided username matches the admin username
-    const isAdmin = username === adminUsername;
+    // Fetch complete product data using the product ID
+    const product = await Product.findById(productId);
 
-    // Return isAdmin status in response
-    res.status(200).json({ isAdmin });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Check if product already exists in wishlist
+    // if (user.wishlist.includes(productId)) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "Product already exists in wishlist" });
+    // }
+
+    // Check if product already exists in wishlist
+    const existingProductIndex = user.wishlist.findIndex(
+      (item) => item._id.toString() === productId
+    );
+
+    if (existingProductIndex !== -1) {
+      return res
+        .status(400)
+        .json({ message: "Product already exists in wishlist" });
+    }
+
+    // Add product to wishlist array
+    user.wishlist.push(product);
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Product added to wishlist successfully",
+    });
   } catch (error) {
-    console.error("Error checking admin status:", error);
+    console.error("Error adding product to wishlist:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-// Login controller
-// export const login = async (req, res) => {
-//   try {
-//     const { username, password } = req.body;
+// Get all users
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({});
 
-//     // Validate required fields
-//     if (!username || !password) {
-//       return res
-//         .status(400)
-//         .json({ message: "Username and password are required" });
-//     }
+    if (!users) {
+      return res.status(404).json({ message: "Users not found" });
+    }
 
-//     // Check if the user credentials match those of the admin
-//     const isAdmin = username === adminUsername && password === adminPassword;
-
-//     // If not admin, perform regular user login
-//     if (!isAdmin) {
-//       // Find user by username or email
-//       const user = await User.findOne({
-//         $or: [{ username }, { email: username }],
-//       });
-//       if (!user) {
-//         console.log(`User with username/email '${username}' not found`);
-//         return res
-//           .status(401)
-//           .json({ message: "Invalid username or password" });
-//       }
-
-//       // Log the retrieved user object for debugging
-//       console.log("Retrieved user:", user);
-
-//       // Validate password
-//       const isValidPassword = await bcrypt.compare(password, user.password);
-
-//       // Print the result of password comparison
-//       console.log("Password comparison result:", isValidPassword);
-
-//       if (!isValidPassword) {
-//         console.log(`Invalid password for user '${username}'`);
-//         return res
-//           .status(401)
-//           .json({ message: "Invalid username or password" });
-//       }
-
-//       console.log(`User '${username}' logged in successfully`);
-
-//       // Generate JWT tokens
-//       const accessToken = jwt.sign({ userId: user._id }, jwtSecret, {
-//         expiresIn: accessTokenExpiration,
-//       });
-//       const refreshToken = jwt.sign({ userId: user._id }, jwtSecret, {
-//         expiresIn: refreshTokenExpiration,
-//       });
-
-//       // Set tokens as HttpOnly cookies
-//       res.cookie("accessToken", accessToken, { httpOnly: true });
-//       res.cookie("refreshToken", refreshToken, { httpOnly: true });
-
-//       res.json({ message: "Login successful", accessToken, refreshToken });
-//     } else {
-//       // If admin, generate JWT with isAdmin flag
-//       const accessToken = jwt.sign({ isAdmin: true }, jwtSecret, {
-//         expiresIn: accessTokenExpiration,
-//       });
-
-//       const refreshToken = jwt.sign({ isAdmin: true }, jwtSecret, {
-//         expiresIn: refreshTokenExpiration,
-//       });
-
-//       // Send the JWT token securely in the response
-//       res.cookie("accessToken", accessToken, { httpOnly: true });
-//       res.cookie("refreshToken", refreshToken, { httpOnly: true });
-//       return res.status(200).json({ message: "Admin login successful" });
-//     }
-//   } catch (error) {
-//     console.error("Login error:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
+    res.status(200).json({
+      success: true,
+      message: "Users fetched successfully",
+      users,
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

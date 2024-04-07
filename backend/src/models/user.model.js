@@ -54,6 +54,20 @@ const userSchema = new mongoose.Schema(
     refreshToken: {
       type: String,
     },
+    // cart: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Cart",
+    // },
+    cart: {
+      type: Array,
+      default: [],
+    },
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
   },
   { timestamps: true }
 );
@@ -64,7 +78,6 @@ userSchema.pre("save", async function (next) {
   }
   next();
 });
-
 
 // Method to generate access token
 userSchema.methods.generateAccessToken = function () {
