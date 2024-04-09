@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/Cloudinary.js";
 
 // @desc    Create a new product
-// @route   POST /api/products
+// @route   POST /api/v1/products
 // @access  Private (Admin)
 const createProduct = asyncHandler(async (req, res) => {
   try {
@@ -60,16 +60,28 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get all products
-// @route   GET /api/products
+// @route   GET /api/v1/products
 // @access  Public
 const getAllProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find();
+  const qCategory = req.query.category;
+  try {
+    let products;
+    if (qCategory) {
+      products = await Product.find({
+        category: {
+          $in: [qCategory],
+        },
+      });
+    } else {
+      products = await Product.find();
+    }
 
-  res.json(new ApiResponse(200, products, "Products fetched successfully"));
+    res.json(new ApiResponse(200, products, "Products fetched successfully"));
+  } catch (error) {}
 });
 
 // @desc    Get product by ID
-// @route   GET /api/products/:id
+// @route   GET /api/v1/products/:id
 // @access  Public
 const getProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
@@ -82,7 +94,7 @@ const getProduct = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update a product
-// @route   PUT /api/products/:id
+// @route   PUT /api/v1/products/:id
 // @access  Private (Admin)
 const updateProduct = asyncHandler(async (req, res) => {
   try {
@@ -129,7 +141,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete a product
-// @route   DELETE /api/products/:id
+// @route   DELETE /api/v1/products/:id
 // @access  Private (Admin)
 const deleteProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);

@@ -226,6 +226,10 @@ export const logout = async (req, res) => {
       httpOnly: true,
       secure: true,
     });
+    res.clearCookie("isAdmin", {
+      httpOnly: true,
+      secure: true,
+    });
 
     res.status(200).json({ message: "Logout successful" });
   } catch (error) {
@@ -271,7 +275,7 @@ export const logout = async (req, res) => {
 // };
 
 // Controller to get current user's profile details
-export const getProfileDetails = async (req, res) => {
+export const getCurrentUserProfile = async (req, res) => {
   try {
     // Extract user ID from the access token cookie
     const accessToken = req.cookies.accessToken;
@@ -339,7 +343,7 @@ export const userCart = async (req, res) => {
   res.status(200).json({
     success: true,
     message: "Cart fetched",
-    cart
+    cart,
   });
 };
 
@@ -392,10 +396,12 @@ export const addToWishlist = async (req, res) => {
   }
 };
 
+//ADMIN CONTROLLERS
+
 // Get all users
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({});
+    const users = await User.find({}, "-password -refreshToken");
 
     if (!users) {
       return res.status(404).json({ message: "Users not found" });
@@ -406,6 +412,55 @@ export const getAllUsers = async (req, res) => {
       message: "Users fetched successfully",
       users,
     });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Get user
+export const getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select(
+      "-password -refreshToken"
+    );
+
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "User found", user });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Delete a user by admin
+export const deleteUserById = async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const userId = _id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // Find the user by ID
+    const user = await User.findById(userId);
+
+    if (user.role === "admin")
+      return res.status(400).json({ message: "Cannot delete admin" });
+
+    const deletedUser = await User.deleteOne({ _id: userId }).select(
+      "-password"
+    );
+
+    if (!deletedUser) {
+      return res.status(400).json({ message: "Error deleting the user" });
+    }
+
+    res.status(200).json({ message: "User deleted successfully", deletedUser });
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ message: "Internal server error" });

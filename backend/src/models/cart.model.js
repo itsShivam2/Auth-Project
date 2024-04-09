@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const cartSchema = new mongoose.Schema(
   {
+    orderBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     items: [
       {
         product: {
@@ -14,10 +19,6 @@ const cartSchema = new mongoose.Schema(
           required: true,
           min: 1,
         },
-        price: {
-          type: Number,
-          required: true,
-        }
       },
     ],
     shippingCost: {
@@ -25,16 +26,11 @@ const cartSchema = new mongoose.Schema(
       //required: true,
       min: 0,
     },
-    totalCost: {
+    totalAmount: {
       type: Number,
       //required: true,
       min: 0,
     },
-    orderBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required:true
-    }
   },
   {
     timestamps: true,
@@ -46,8 +42,6 @@ function arrayMinLength(val) {
 }
 
 export const Cart = mongoose.model("Cart", cartSchema);
-
-
 
 // const cartItemSchema = new mongoose.Schema(
 //   {

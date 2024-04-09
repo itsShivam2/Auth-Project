@@ -119,4 +119,12 @@ const clearCart = asyncHandler(async (req, res) => {
   res.json(new ApiResponse(200, cart, "Cart cleared successfully"));
 });
 
-export { getCart, addToCart, updateCartItem, removeFromCart, clearCart };
+// ADMIN CONTROLLERS
+
+// Get all carts
+const getAllCarts = asyncHandler(async (req, res) => {
+  const carts = await Cart.find().populate("items.product");
+  res.json(new ApiResponse(200, carts, "All Carts fetched successfully"));
+});
+
+export { getCart, addToCart, updateCartItem, removeFromCart, clearCart, getAllCarts };

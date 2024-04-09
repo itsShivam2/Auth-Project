@@ -1,15 +1,22 @@
 import React from "react";
-import QuantityControl from "./QuantityControl";
 
 const CartItem = ({ item, onDelete, onUpdateQuantity }) => {
-  const { title, newPrice, imageUrl } = item;
+  const { name, newPrice, productImage, quantity } = item;
+
+  const decreaseQuantity = () => {
+    onUpdateQuantity(Math.max(0, quantity - 1));
+  };
+
+  const increaseQuantity = () => {
+    onUpdateQuantity(quantity + 1);
+  };
 
   return (
     <div className="w-full flex flex-col md:flex-row md:justify-between items-center gap-2">
       <div className="w-full md:w-[30%] flex items-center self-start justify-between">
-        <img src={imageUrl} className="w-[120px]" />
+        <img src={productImage} className="w-[120px]" alt={name} />
         <div className="flex flex-col items-center justify-between gap-2">
-          <h2>{title}</h2>
+          <h2>{name}</h2>
           <p>₹{newPrice}</p>
         </div>
       </div>
@@ -17,13 +24,23 @@ const CartItem = ({ item, onDelete, onUpdateQuantity }) => {
       <div className="w-full md:w-[30%] flex items-center justify-between">
         <div className="flex items-center justify-between gap-3 border p-3">
           <p className="text-sm">Qty</p>
-          <QuantityControl
-            quantity={item.quantity}
-            onDecrease={() => onUpdateQuantity(Math.max(0, item.quantity - 1))}
-            onIncrease={() => onUpdateQuantity(item.quantity + 1)}
-          />
+          <div className="flex items-center justify-center gap-4 text-sm font-semibold">
+            <button
+              onClick={decreaseQuantity}
+              className="border h-6 text-lg font-normal flex items-center justify-center px-3 py-1 hover:bg-gray-600 transform-transition duration-1000 hover:text-white"
+            >
+              -
+            </button>
+            <span>{quantity}</span>
+            <button
+              onClick={increaseQuantity}
+              className="border h-6 text-lg font-normal flex items-center justify-center px-2 py-1 hover:bg-gray-600 transform-transition duration-1000 hover:text-white"
+            >
+              +
+            </button>
+          </div>
         </div>
-        <p>₹{item.newPrice * item.quantity}</p>
+        <p>₹{newPrice * quantity}</p>
       </div>
 
       <button

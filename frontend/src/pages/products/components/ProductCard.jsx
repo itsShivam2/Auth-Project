@@ -2,21 +2,15 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import * as IconsAndImages from "../../../Assets/IconsAndImages";
-import { addToCart } from "../../../features/cart/cartSlice";
+import { addProduct } from "../../../redux/cart/cartSlice";
 
 const ProductCard = ({ product, scrollToTop }) => {
   const dispatch = useDispatch();
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
-  const handleAddToCart = () => {
-    setIsAddingToCart(true);
-    dispatch(addToCart({ product: product._id, quantity: 1 }))
-      .then(() => {
-        setIsAddingToCart(false);
-      })
-      .catch(() => {
-        setIsAddingToCart(false);
-      });
+  const addToCart = () => {
+    dispatch(addProduct({ ...product, quantity: 1 })).then(() => {
+      setIsAddingToCart(false);
+    });
   };
 
   return (
@@ -41,18 +35,16 @@ const ProductCard = ({ product, scrollToTop }) => {
               ₹{product.newPrice}
             </p>
           </div>
-        </div>~
+        </div>
+        ~
       </Link>
       <div className="mt-4 flex justify-center w-full px-4 pb-4">
         <button
           type="button"
-          onClick={handleAddToCart}
-          disabled={isAddingToCart}
-          className={`flex items-center justify-center w-5/6 py-3 font-[Fahkwang] text-white font-medium text-sm rounded-lg cursor-pointer bg-gray-700 hover:bg-sky-950 transform-transition duration-900 hover:w-full transform-transition duration-1000 focus:outline-none hover:drop-shadow-lg ${
-            isAddingToCart ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          onClick={addToCart}
+          className="flex items-center justify-center w-5/6 py-3 font-[Fahkwang] text-white font-medium text-sm rounded-lg cursor-pointer bg-gray-700 hover:bg-sky-950 transform-transition duration-900 hover:w-full transform-transition duration-1000 focus:outline-none hover:drop-shadow-lg "
         >
-          {isAddingToCart ? "Adding..." : "Add To Cart"}{" "}
+          Add To Cart"
           <IconsAndImages.BsArrowRight />
         </button>
       </div>

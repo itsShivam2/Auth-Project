@@ -6,16 +6,20 @@ import ProductImage from "./components/ProductImage";
 import ProductDetails from "./components/ProductDetails";
 import QuantitySelector from "./components/QuantitySelector";
 import AddToCartButton from "./components/AddToCartButton";
-
+import { addProduct } from "../../redux/cart/cartSlice";
+import { useDispatch } from "react-redux";
 function ProductItemPage({ match }) {
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState(null);
   const { id } = useParams();
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:7400/api/v1/product/${id}`,{withCredentials:true}
+          `http://localhost:7400/api/v1/product/${id}`,
+          { withCredentials: true }
         );
         setProduct(response.data.data);
       } catch (error) {
@@ -26,8 +30,8 @@ function ProductItemPage({ match }) {
     fetchProduct();
   }, [id]);
 
-  const addCart = () => {
-    // Logic to add product to cart
+  const addToCart = () => {
+    dispatch(addProduct({ ...product, quantity }));
     console.log("Adding product to cart:", product);
   };
 
@@ -41,10 +45,11 @@ function ProductItemPage({ match }) {
             <div className="min-w-full flex flex-col sm:flex-row justify-between gap-2 my-4">
               <QuantitySelector
                 quantity={quantity}
+                setQuantity={setQuantity}
                 onDecrease={() => setQuantity((prev) => Math.max(prev - 1, 1))}
                 onIncrease={() => setQuantity((prev) => prev + 1)}
               />
-              {product && <AddToCartButton onClick={addCart} />}
+              {product && <AddToCartButton onClick={addToCart} />}
             </div>
           </div>
         </div>

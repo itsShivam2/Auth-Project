@@ -1,51 +1,45 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { useDispatch } from "react-redux";
-import { loginSuccess } from "../../features/auth/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../redux/user/actions/userActions";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import Input from "../../components/input/Input";
 import { FaUserCheck, FaLock } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const error = useSelector((state) => state.auth.error);
+  const loading = useSelector((state) => state.auth.loading);
 
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
-  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post(
-        "http://localhost:7400/api/v1/auth/login",
-        formData,
-        { withCredentials: true }
-      );
-      const { accessToken, username, role } = response.data;
-      // Dispatch action to store user data
-      dispatch(
-        loginSuccess({
-          accessToken,
-          isAdmin: role === "admin",
-          isAuthenticated: true,
-        })
-      );
-      localStorage.setItem("username", username);
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("isAdmin", role === "admin" ? true : false);
-      navigate("/");
-    } catch (error) {
-      console.error("Login error:", error.response.data.message);
-      setError(error.response.data.message);
-    }
+    dispatch(login(formData))
+      .then(({ success }) => {
+        if (success) {
+          toast.success("Login successful");
+          setTimeout(() => {
+            navigate("/");
+          }, 3000);
+        } else {
+          toast.error("Login failed. Please try again.");
+        }
+      })
+      .catch((error) => {
+        toast.error("Login failed. Please try again.");
+        console.error("Login error:", error);
+      });
   };
 
   return (
@@ -96,9 +90,10 @@ const Login = () => {
             <div>
               <button
                 type="submit"
+                disabled={loading}
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-                Sign in
+                {loading ? "Please wait..." : "Sign in"}
               </button>
             </div>
           </form>

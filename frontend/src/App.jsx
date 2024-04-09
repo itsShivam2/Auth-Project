@@ -6,7 +6,6 @@ import {
   Navigate,
 } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { loginSuccess } from "./features/auth/authSlice";
 import Home from "./pages/home/Home";
 import About from "./pages/about/About";
 import Contact from "./pages/contact/Contact";
@@ -22,9 +21,10 @@ import UpdateProfile from "./pages/updateProfile/UpdateProfile";
 import Cart from "./pages/cart/Cart";
 import Checkout from "./pages/checkout/Checkout";
 import NotFound from "./pages/notFound/NotFound";
-
+import axios from "axios";
+import { setUser } from "./redux/user/userSlice";
 const App = () => {
-
+  const state = useSelector((state) => state.auth);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const isAdmin = useSelector((state) => state.auth.isAdmin);
   const dispatch = useDispatch();
@@ -32,14 +32,47 @@ const App = () => {
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
-      dispatch(loginSuccess({ accessToken, isAuthenticated: true }));
+      dispatch(setUser({ accessToken, isAuthenticated: true }));
     }
     const adminStatus = localStorage.getItem("isAdmin");
     if (adminStatus) {
-      dispatch(loginSuccess({ isAdmin:true }));
+      dispatch(setUser({ accessToken, isAuthenticated: true, isAdmin: true }));
     }
-
   }, []);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await axios.post(
+          "http://localhost:7400/api/v1/auth/refresh-token",
+          {},
+          {
+            withCredentials: true,
+          }
+        );
+        if (response.status === 200) {
+          const userData = response.data;
+          dispatch(
+            setUser({
+              ...state,
+              accessToken: userData.accessToken,
+            })
+          );
+        } else {
+          localStorage.clear();
+        }
+      } catch (error) {
+        console.error("Error checking authentication:", error);
+        localStorage.clear();
+      }
+    };
+
+    checkAuth();
+
+    // Refresh access token periodically before it expires
+    const accessTokenRefreshInterval = setInterval(checkAuth, 15 * 60 * 1000); // Refresh every 15 minutes
+    return () => clearInterval(accessTokenRefreshInterval); // Clean up interval on component unmount
+  }, [dispatch, state.accessToken, state.isAdmin]);
 
   return (
     <Router>
@@ -47,12 +80,33 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/signup"
+          element={isAuthenticated ? <Navigate to="/" /> : <Signup />}
+        />
+        <Route
+          path="/login"
+          element={isAuthenticated ? <Navigate to="/" /> : <Login />}
+        />
         <Route path="/products" element={<Products />} />
         <Route path="/products/:id" element={<ProductItemPage />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="*" element={<NotFound />} />
+
+        {/*  */}
+        {/* <Route element={<PersistLogin />}> */}
+        {/* <Route path="/profile" element={<User />} />
+        <Route path="/update-profile" element={<UpdateProfile />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/success" element={<Success />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/add-product" element={<AddProduct />} />
+        <Route
+          path="/products/:id/update-product"
+          element={<UpdateProduct />}
+        /> */}
+        {/* </Route> */}
+        {/*  */}
 
         {isAuthenticated && (
           <>
@@ -66,7 +120,12 @@ const App = () => {
           <>
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/add-product" element={<AddProduct />} />
-            <Route path="/products/:id/update-product" element={<UpdateProduct />} />
+            <Route
+              path="/products/:id/update-product"
+              element={<UpdateProduct />}
+            />
+            <Route path="/signup" element={<Home />} />
+            <Route path="/login" element={<Home />} />
           </>
         )}
 
@@ -83,57 +142,3 @@ const App = () => {
 };
 
 export default App;
-
-
-  // const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // const [loading, setLoading] = useState(true);
-  // const [isAdmin, setIsAdmin] = useState(false);
-  // const [authChecked, setAuthChecked] = useState(false);
-
-  // useEffect(() => {
-  //   checkAuthentication();
-  // }, []);
-
-  // const checkAuthentication = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       "http://localhost:7400/api/v1/auth/current-user",
-  //       { withCredentials: true }
-  //     );
-  //     if (response.status === 200) {
-  //       setIsAuthenticated(true);
-  //       await checkAdminStatus();
-  //     }
-  //   } catch (error) {
-  //     setIsAuthenticated(false);
-  //     setIsAdmin(false);
-  //   } finally {
-  //     setLoading(false);
-  //     setAuthChecked(true);
-  //   }
-  // };
-
-  // const checkAdminStatus = async () => {
-  //   try {
-  //     const username = localStorage.getItem("username");
-
-  //     const response = await axios.post(
-  //       "http://localhost:7400/api/v1/auth/is-admin",
-  //       { username },
-  //       { withCredentials: true }
-  //     );
-
-  //     setIsAdmin(response.data.isAdmin);
-  //   } catch (error) {
-  //     console.error("Error checking admin status:", error);
-  //   }
-  // };
-
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
-
-  // // If authentication checks are not complete, return null to prevent rendering
-  // if (!authChecked) {
-  //   return null;
-  // }

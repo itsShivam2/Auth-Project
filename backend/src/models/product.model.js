@@ -17,10 +17,19 @@ const productSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    category: {
-      type: String,
-      enum: ["mens", "womens", "children"],
+    categories: {
+      type: Array,
       required: true,
+    },
+    size: {
+      type: Array,
+    },
+    color: {
+      type: Array,
+    },
+    inStock: {
+      type: Boolean,
+      default: true,
     },
     oldPrice: {
       type: Number,

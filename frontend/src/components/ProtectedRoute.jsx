@@ -1,12 +1,13 @@
 import React from "react";
-import { Route } from "react-router-dom";
+import { Route, Navigate } from "react-router-dom";
 
-const ProtectedRoute = ({ element: Element, isAuthenticated, ...rest }) => {
-  // If user is authenticated, render the provided element, otherwise redirect to login page
+const ProtectedRoute = ({ element: Element, ...rest }) => {
+  const isAuthenticated = 4;
+
   return (
     <Route
       {...rest}
-      element={isAuthenticated ? <Element /> : null}
+      element={isAuthenticated ? <Element /> : <Navigate to="/login" />}
     />
   );
 };

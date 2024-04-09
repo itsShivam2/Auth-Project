@@ -10,6 +10,8 @@ dotenv.config();
 import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
+import paymentRoutes from "./routes/product.routes.js";
+import orderRoutes from "./routes/order.routes.js";
 
 // Create Express app
 const app = express();
@@ -41,6 +43,8 @@ connectDB();
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
+app.use("/api/v1/order", orderRoutes);
+app.use("/api/v1/payment", paymentRoutes);
 // Handle OPTIONS requests
 app.options("*", cors());
 

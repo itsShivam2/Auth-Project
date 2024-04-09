@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import { logoutSuccess } from "../../features/auth/authSlice";
-import {FaBars} from "react-icons/fa"
+import { clearUser } from "../../redux/user/userSlice";
+import { FaBars, FaShoppingCart } from "react-icons/fa";
 
 const Header = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -18,7 +18,7 @@ const Header = () => {
         { withCredentials: true }
       );
       if (response.status === 200) {
-        dispatch(logoutSuccess());
+        dispatch(clearUser());
         localStorage.removeItem("username");
         localStorage.removeItem("accessToken");
         localStorage.removeItem("isAdmin");
@@ -49,52 +49,57 @@ const Header = () => {
             </ul>
           </nav>
         </div>
-        <div className="flex items-center">
-          {isAuthenticated ? (
-            <div className="relative">
-              <button className="mr-4"> {/* User Profile Icon */} </button>
-              <ul className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg">
-                <li>
-                  <Link
-                    to="/profile"
-                    className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
-                  >
-                    Profile
-                  </Link>
-                </li>
-                {isAdmin && (
+        <div className="flex items-center justify-between gap-4">
+          <Link to="/cart" className="mr-4">
+            <FaShoppingCart />
+          </Link>
+          <div className="flex items-center">
+            {isAuthenticated ? (
+              <div className="relative">
+                <button className="mr-4"> {/* User Profile Icon */} </button>
+                <ul className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg">
                   <li>
                     <Link
-                      to="/admin"
+                      to="/profile"
                       className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
                     >
-                      Admin
+                      Profile
                     </Link>
                   </li>
-                )}
-                <li>
-                  <Link
-                    to="/wishlist"
-                    className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
-                  >
-                    Wishlist
-                  </Link>
-                </li>
-                <li>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-200"
-                  >
-                    Logout
-                  </button>
-                </li>
-              </ul>
-            </div>
-          ) : (
-            <Link to="/login" className="mr-4">
-              Login
-            </Link>
-          )}
+                  {isAdmin && (
+                    <li>
+                      <Link
+                        to="/admin"
+                        className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
+                      >
+                        Admin
+                      </Link>
+                    </li>
+                  )}
+                  <li>
+                    <Link
+                      to="/wishlist"
+                      className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
+                    >
+                      Wishlist
+                    </Link>
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-200"
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            ) : (
+              <Link to="/login" className="mr-4">
+                Login
+              </Link>
+            )}
+          </div>{" "}
         </div>
       </div>
     </header>
@@ -102,9 +107,6 @@ const Header = () => {
 };
 
 export default Header;
-
-
-
 
 // import React, { useState, useEffect } from "react";
 // import { Link } from "react-router-dom";
@@ -137,36 +139,35 @@ export default Header;
 //     checkAuthStatus();
 //   }, []);
 
-  // const checkAdminStatus = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       "http://localhost:7400/api/v1/auth/is-admin",
-  //       { withCredentials: true }
-  //     );
-  //     setIsAdmin(response.data.isAdmin);
-  //   } catch (error) {
-  //     console.error("Error checking admin status:", error);
-  //   }
-  // };
+// const checkAdminStatus = async () => {
+//   try {
+//     const response = await axios.get(
+//       "http://localhost:7400/api/v1/auth/is-admin",
+//       { withCredentials: true }
+//     );
+//     setIsAdmin(response.data.isAdmin);
+//   } catch (error) {
+//     console.error("Error checking admin status:", error);
+//   }
+// };
 
 //   const checkAdminStatus = async () => {
 //     try {
 //       // Get username from localStorage
 //       const username = localStorage.getItem("username");
-  
+
 //       // Send username to backend to check admin status
 //       const response = await axios.post(
 //         "http://localhost:7400/api/v1/auth/is-admin",
 //         { username },
 //         { withCredentials: true }
 //       );
-  
+
 //       setIsAdmin(response.data.isAdmin);
 //     } catch (error) {
 //       console.error("Error checking admin status:", error);
 //     }
 //   };
-  
 
 //   const handleLogout = async () => {
 //     try {
