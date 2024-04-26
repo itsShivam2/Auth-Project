@@ -1,10 +1,10 @@
-import stripePackage from "stripe";
+import Stripe from "stripe";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const KEY = process.env.STRIPE_API_KEY;
-const stripe = stripePackage(KEY);
+const stripe = new Stripe("KEY");
 
 const createPayment = async (req, res) => {
   try {

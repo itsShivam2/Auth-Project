@@ -1,4 +1,3 @@
-// orderActions.js
 import { setOrders, setLoading, setError } from "../orderSlice";
 import axios from "axios";
 
@@ -21,7 +20,10 @@ export const createOrder = (orderData) => async (dispatch) => {
     dispatch(setLoading(true));
     const response = await axios.post(
       "http://localhost:7400/api/orders/create-order",
-      orderData
+      orderData,
+      {
+        withCredentials: true,
+      }
     );
     dispatch(fetchOrders()); // Fetch orders again after creating a new one
   } catch (error) {

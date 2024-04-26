@@ -1,20 +1,22 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
-const CartItem = ({ item, onDelete, onUpdateQuantity }) => {
-  const { name, newPrice, productImage, quantity } = item;
-
+const CartItem = ({ product, itemQuantity, onDelete, onUpdateQuantity }) => {
+  const { name, newPrice, productImage, _id } = product;
   const decreaseQuantity = () => {
-    onUpdateQuantity(Math.max(0, quantity - 1));
+    onUpdateQuantity(Math.max(0, itemQuantity - 1));
   };
 
   const increaseQuantity = () => {
-    onUpdateQuantity(quantity + 1);
+    onUpdateQuantity(itemQuantity + 1);
   };
 
   return (
     <div className="w-full flex flex-col md:flex-row md:justify-between items-center gap-2">
       <div className="w-full md:w-[30%] flex items-center self-start justify-between">
-        <img src={productImage} className="w-[120px]" alt={name} />
+        <Link to={`/products/${_id}`}>
+          <img src={productImage} className="w-[120px]" alt={name} />
+        </Link>
         <div className="flex flex-col items-center justify-between gap-2">
           <h2>{name}</h2>
           <p>₹{newPrice}</p>
@@ -31,7 +33,7 @@ const CartItem = ({ item, onDelete, onUpdateQuantity }) => {
             >
               -
             </button>
-            <span>{quantity}</span>
+            <span>{itemQuantity}</span>
             <button
               onClick={increaseQuantity}
               className="border h-6 text-lg font-normal flex items-center justify-center px-2 py-1 hover:bg-gray-600 transform-transition duration-1000 hover:text-white"
@@ -40,7 +42,7 @@ const CartItem = ({ item, onDelete, onUpdateQuantity }) => {
             </button>
           </div>
         </div>
-        <p>₹{newPrice * quantity}</p>
+        <p>₹{newPrice * itemQuantity}</p>
       </div>
 
       <button

@@ -1,16 +1,14 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { addProductToCart } from "../../../redux/cart/actions/cartActions";
 import * as IconsAndImages from "../../../Assets/IconsAndImages";
-import { addProduct } from "../../../redux/cart/cartSlice";
 
 const ProductCard = ({ product, scrollToTop }) => {
   const dispatch = useDispatch();
 
   const addToCart = () => {
-    dispatch(addProduct({ ...product, quantity: 1 })).then(() => {
-      setIsAddingToCart(false);
-    });
+    dispatch(addProductToCart({ product, quantity: 1 }));
   };
 
   return (

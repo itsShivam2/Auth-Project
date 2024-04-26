@@ -62,8 +62,16 @@ export const logout = () => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.post(
-      "http://localhost:7400/api/v1/auth/logout"
+      "http://localhost:7400/api/v1/auth/logout",
+      null,
+      { withCredentials: true }
     );
+    if (response.status === 200) {
+      dispatch(clearUser());
+      localStorage.removeItem("username");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("isAdmin");
+    }
     console.log(response.data);
     localStorage.clear();
     // Handle success scenario, such as clearing user data from local storage and redirecting

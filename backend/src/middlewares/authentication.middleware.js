@@ -2,12 +2,10 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { User } from "../models/user.model.js";
 
-// Load environment variables from .env file
 dotenv.config();
 
 export const authenticate = async (req, res, next) => {
   try {
-    // Extract token from request headers or cookies
     const token =
       req.headers.authorization?.split(" ")[1] || req.cookies.accessToken;
 
@@ -15,7 +13,6 @@ export const authenticate = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized: Missing token" });
     }
 
-    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     if (!decoded) {
@@ -31,7 +28,7 @@ export const authenticate = async (req, res, next) => {
 
     // Attach the user object to the request
     req.user = user;
-    console.log("Authenticated user:", req.user); // Debugging output
+    console.log("Authenticated user:", req.user);
 
     next();
   } catch (error) {

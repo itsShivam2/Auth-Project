@@ -5,7 +5,6 @@ import {
   deleteOrderById,
   getUserOrders,
   getAllOrders,
-  getMonthlyIncome,
 } from "../controllers/order.controller.js";
 import { authenticate } from "../middlewares/authentication.middleware.js";
 import { adminAuth } from "../middlewares/adminAuth.middleware.js";
@@ -18,13 +17,13 @@ router.post("/create-order", authenticate, createOrder);
 // Update user order
 router.put("/:id", authenticate, adminAuth, updateOrderById);
 
-// Delete cart item quantity
+// Delete user order
 router.delete("/:id", authenticate, adminAuth, deleteOrderById);
 
-// Get user orders
-router.get("/user/:id", authenticate, adminAuth, getUserOrders);
+// Get all orders of a user
+router.get("/user/:id", authenticate, getUserOrders);
 
-// Get all orders
+// Get all orders from all users
 router.get("/all-orders", authenticate, adminAuth, getAllOrders);
 
 export default router;

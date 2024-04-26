@@ -1,27 +1,68 @@
 import { Order } from "../models/order.model.js";
+import { User } from "../models/user.model.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Product } from "../models/product.model.js";
-
-// Create new order
+import {v4 as uuid} from "uuid"
+// Create a new order
 const createOrder = asyncHandler(async (req, res) => {
   try {
-    const newOrder = new Order(req.body);
+    const { user } = req;
 
-    const savedOrder = await newOrder.save();
+    // Find the user by ID and populate the cart items
+    const foundUser = await User.findById(user._id).populate(
+      "cart.items.product"
+    );
 
-    if (!savedOrder) {
-      throw new ApiError(404, "Order not found");
+    if (!foundUser) {
+      throw new ApiError(404, "User not found");
     }
-    res
-      .status(201)
-      .json(new ApiResponse(201, savedOrder, "Order placed successfully"));
+
+    // Check if the user's cart is empty
+    if (foundUser.cart.items.length === 0) {
+      throw new ApiError(400, "Cannot create order with an empty cart");
+    }
+
+    // Calculate total amount for the order (including shipping charges)
+    const totalAmount = calculateTotalAmount(foundUser.cart.items) + 50;
+
+    // Create the order
+    const newOrder = new Order({
+      orderBy: user._id,
+      items: foundUser.cart.items.map((item) => ({
+        product: item.product._id,
+        quantity: item.quantity,
+      })),
+      totalAmount,
+      shippingAddress: req.body.shippingAddress, 
+      status: "pending",
+    });
+
+    // Save the order to the database
+    await newOrder.save();
+
+    // Clear user's cart
+    foundUser.cart.items = [];
+    foundUser.cart.totalAmount = 0;
+    await foundUser.save();
+
+    // Respond with success message and the created order
+    res.json(new ApiResponse(201, newOrder, "Order created successfully"));
   } catch (error) {
-    console.error("Error placing the order:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error creating order:", error);
+    res.status(error.statusCode || 500).json({ message: error.message });
   }
 });
+
+// Calculate total amount based on items in the cart
+const calculateTotalAmount = (cartItems) => {
+  let totalAmount = 0;
+  cartItems.forEach((item) => {
+    totalAmount += item.price * item.quantity;
+  });
+  return totalAmount;
+};
 
 // Update order by ID
 const updateOrderById = asyncHandler(async (req, res) => {
@@ -65,118 +106,30 @@ const deleteOrderById = asyncHandler(async (req, res) => {
   }
 });
 
-// Get orders of a specific user
+// Get orders for a specific user
 const getUserOrders = asyncHandler(async (req, res) => {
   try {
-    const orders = await Order.find({ userId: req.params.userId });
+    const { user } = req;
 
-    res
-      .status(200)
-      .json(new ApiResponse(200, orders, "User orders retrieved successfully"));
+    // Find orders by user ID
+    const orders = await Order.find({ orderBy: user._id });
+
+    res.json(new ApiResponse(200, orders, "User orders fetched successfully"));
   } catch (error) {
     console.error("Error fetching user orders:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
-// Get all orders
+// Get all orders (admin only)
 const getAllOrders = asyncHandler(async (req, res) => {
   try {
+    // Find all orders
     const orders = await Order.find();
 
-    res
-      .status(200)
-      .json(new ApiResponse(200, orders, "All orders retrieved successfully"));
+    res.json(new ApiResponse(200, orders, "All orders fetched successfully"));
   } catch (error) {
     console.error("Error fetching all orders:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-// Calculate monthly income
-const getMonthlyIncome = asyncHandler(async (req, res) => {
-  const productId = req.query.pid;
-  const date = new Date();
-  const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
-  const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
-
-  try {
-    const income = await Order.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: previousMonth },
-          ...(productId && {
-            products: { $elemMatch: { productId } },
-          }),
-        },
-      },
-      {
-        $project: {
-          month: { $month: "$createdAt" },
-          sales: "$amount",
-        },
-      },
-      {
-        $group: {
-          _id: "$month",
-          total: { $sum: "$sales" },
-        },
-      },
-    ]);
-
-    res
-      .status(200)
-      .json(
-        new ApiResponse(200, income, "Monthly income calculated successfully")
-      );
-  } catch (error) {
-    console.error("Error calculating monthly income:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-// Add item to cart
-const addToCart = asyncHandler(async (req, res) => {
-  try {
-    const { user } = req;
-    const { product, quantity } = req.body;
-    console.log("request product", product);
-    console.log("requesting user", user);
-
-    let cart = await Cart.findOne({ orderBy: user._id });
-
-    if (!cart) {
-      cart = await Cart.create({ orderBy: user._id, items: [] });
-    }
-
-    const selectedProduct = await Product.findById({ _id: product });
-    console.log("selectedProduct", selectedProduct);
-    if (!selectedProduct) {
-      throw new ApiError(404, "Product not found");
-    }
-
-    const price = selectedProduct.newPrice; // Assuming newPrice is the price to be used
-
-    // Check if the item already exists in the cart
-    const existingItemIndex = cart.items.findIndex(
-      (item) => item.product.toString() === product
-    );
-    if (existingItemIndex !== -1) {
-      cart.items[existingItemIndex].quantity += quantity;
-    } else {
-      cart.items.push({ product, quantity, price });
-    }
-
-    // Calculate total cost and shipping cost
-    cart.totalCost = calculateTotalCost(cart.items);
-    cart.shippingCost = 50; // Fixed shipping cost per order
-
-    await cart.save();
-    res
-      .status(201)
-      .json(new ApiResponse(201, cart, "Item added to cart successfully"));
-  } catch (error) {
-    console.error("Error adding item to cart:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -187,5 +140,4 @@ export {
   deleteOrderById,
   getUserOrders,
   getAllOrders,
-  getMonthlyIncome,
 };

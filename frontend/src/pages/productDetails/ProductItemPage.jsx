@@ -2,12 +2,15 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
-import ProductImage from "./components/ProductImage";
-import ProductDetails from "./components/ProductDetails";
-import QuantitySelector from "./components/QuantitySelector";
-import AddToCartButton from "./components/AddToCartButton";
-import { addProduct } from "../../redux/cart/cartSlice";
+import {
+  AddToCartButton,
+  ProductDetails,
+  ProductImage,
+  QuantitySelector,
+} from "./components/Index";
+import { addProductToCart } from "../../redux/cart/actions/cartActions";
 import { useDispatch } from "react-redux";
+
 function ProductItemPage({ match }) {
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState(null);
@@ -31,7 +34,7 @@ function ProductItemPage({ match }) {
   }, [id]);
 
   const addToCart = () => {
-    dispatch(addProduct({ ...product, quantity }));
+    dispatch(addProductToCart({ product, quantity }));
     console.log("Adding product to cart:", product);
   };
 

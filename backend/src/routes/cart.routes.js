@@ -19,10 +19,10 @@ router.post("/add", authenticate, addToCart);
 // Update cart item quantity
 router.put("/:itemId", authenticate, updateCartItem);
 
+// Clear user's cart
+router.delete("/clear-cart", authenticate, clearCart);
+
 // Remove item from cart
 router.delete("/:itemId", authenticate, removeFromCart);
-
-// Clear user's cart
-router.delete("/", authenticate, clearCart);
 
 export default router;

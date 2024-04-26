@@ -28,7 +28,6 @@ router.post("/logout", authenticate, logout);
 router.post("/update-password", authenticate, updatePassword);
 
 router.get("/cart", userCart);
-//router.post("/cart", userCart);
 
 // Add product to wishlist route
 router.post("/wishlist/add", authenticate, addToWishlist);
