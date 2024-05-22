@@ -68,15 +68,13 @@ export const logout = () => async (dispatch) => {
     );
     if (response.status === 200) {
       dispatch(clearUser());
-      localStorage.removeItem("username");
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("isAdmin");
+      localStorage.clear();
+      return { success: true };
     }
-    console.log(response.data);
-    localStorage.clear();
-    // Handle success scenario, such as clearing user data from local storage and redirecting
   } catch (error) {
-    dispatch(setError(error.response.data.message));
+    dispatch(setError(error.response?.data?.message || "Logout failed"));
+  } finally {
+    dispatch(setLoading(false));
   }
 };
 

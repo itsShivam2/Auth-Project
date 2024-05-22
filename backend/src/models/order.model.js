@@ -28,13 +28,17 @@ const orderSchema = new mongoose.Schema(
     },
     shippingAddress: {
       type: Object,
-      required: true,
+      // required: true,
       trim: true,
     },
     status: {
       type: String,
       enum: ["pending", "processing", "shipped", "delivered"],
       default: "pending",
+    },
+    transactionId: {
+      type: String,
+      // required: true,
     },
   },
   { timestamps: true }

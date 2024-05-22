@@ -1,11 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MdOutlineStar, MdFavoriteBorder, MdFavorite } from "react-icons/md";
-
+import axios from "axios";
 function ProductDetails({ product }) {
-  const [isInWishlist, setIsInWishlist] = useState(true);
+  const [isInWishlist, setIsInWishlist] = useState(false);
+  const [wishlistMessage, setWishlistMessage] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const checkWishlist = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:7400/api/v1/user/wishlist`,
+          { withCredentials: true }
+        );
+        const wishlist = response.data.data;
+        setIsInWishlist(wishlist.some((item) => item._id === product._id));
+      } catch (error) {
+        console.error("Error checking wishlist:", error);
+      }
+    };
+
+    checkWishlist();
+  }, [product._id]);
+
+  const addToWishlist = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:7400/api/v1/user/wishlist/${product._id}`,
+        {},
+        { withCredentials: true }
+      );
+      setWishlistMessage(response.data.message);
+      console.log(response.data.message);
+    } catch (error) {
+      setError(error.response?.data?.message || "Error adding to wishlist");
+    }
+  };
 
   const toggleWishlist = () => {
     setIsInWishlist(!isInWishlist);
+  };
+
+  const handleWishlistClick = () => {
+    addToWishlist();
+    setIsInWishlist((prev) => !prev);
   };
 
   return (
@@ -16,7 +54,7 @@ function ProductDetails({ product }) {
             {product.name}
           </h2>
 
-          <div onClick={toggleWishlist}>
+          <div onClick={handleWishlistClick}>
             {/* Wishlist icon */}
             {isInWishlist ? (
               <MdFavorite className="text-red-500 text-4xl cursor-pointer" />

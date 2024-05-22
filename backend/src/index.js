@@ -3,6 +3,7 @@ import connectDB from "./connectDB/connectDB.js"; // Import the database connect
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import Razorpay from "razorpay";
 // Load environment variables from .env file
 dotenv.config();
 
@@ -10,9 +11,9 @@ dotenv.config();
 import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
-import paymentRoutes from "./routes/product.routes.js";
+import paymentRoutes from "./routes/payment.routes.js";
 import orderRoutes from "./routes/order.routes.js";
-
+import userRoutes from "./routes/user.routes.js";
 // Create Express app
 const app = express();
 
@@ -45,8 +46,18 @@ app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/order", orderRoutes);
 app.use("/api/v1/payment", paymentRoutes);
+app.use("/api/v1/user", userRoutes);
+
+app.get("/api/v1/getkey", (req, res) =>
+  res.status(200).json({ key: process.env.RAZORPAY_API_KEY })
+);
 // Handle OPTIONS requests
 app.options("*", cors());
+
+export const instance = new Razorpay({
+  key_id: process.env.RAZORPAY_API_KEY,
+  key_secret: process.env.RAZORPAY_APT_SECRET,
+});
 
 // Start the server
 const PORT = process.env.PORT || 3000;

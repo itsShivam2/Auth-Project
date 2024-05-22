@@ -72,9 +72,7 @@ const addToCart = asyncHandler(async (req, res) => {
 const updateCartItem = asyncHandler(async (req, res) => {
   try {
     const { user } = req;
-    console.log(user);
     const { itemId } = req.params;
-    console.log(itemId);
     const { quantity } = req.body;
 
     // Find the user by ID and populate the cart items

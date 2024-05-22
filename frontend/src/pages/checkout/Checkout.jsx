@@ -20,25 +20,25 @@ function Checkout() {
   const [addresses, setAddresses] = useState(null);
   const dispatch = useDispatch();
 
-  const handleToken = async (token) => {
-    setStripeToken(token);
-    console.log("token", token);
-    const { shippingAddress } = token;
-    console.log(shippingAddress);
-    // Create order data object
-    const orderData = {
-      // orderBy: userId,
-      items: cartItems.products.map((item) => ({
-        product: item.product._id,
-        quantity: item.quantity,
-      })),
-      totalAmount: grandTotal,
-      shippingAddress: shippingAddress,
-    };
+  // const handleToken = async (token) => {
+  //   setStripeToken(token);
+  //   console.log("token", token);
+  //   const { shippingAddress } = token;
+  //   console.log(shippingAddress);
+  //   // Create order data object
+  //   const orderData = {
+  //     // orderBy: userId,
+  //     items: cartItems.products.map((item) => ({
+  //       product: item.product._id,
+  //       quantity: item.quantity,
+  //     })),
+  //     totalAmount: grandTotal,
+  //     shippingAddress: shippingAddress,
+  //   };
 
-    // Dispatch action to place the order
-    dispatch(createOrder(orderData));
-  };
+  //   // Dispatch action to place the order
+  //   dispatch(createOrder(orderData));
+  // };
 
   return (
     <div>

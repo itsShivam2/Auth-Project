@@ -3,7 +3,6 @@ import Layout from "../../components/layout/Layout";
 import CartItem from "./components/CartItem";
 import { useSelector, useDispatch } from "react-redux";
 import { createOrder } from "../../redux/order/actions/orderActions";
-import StripeCheckout from "react-stripe-checkout";
 import axios from "axios";
 import {
   fetchCartFromDB,
@@ -13,11 +12,9 @@ import {
 
 function Cart() {
   const cartItems = useSelector((state) => state.cart);
-  console.log("cartItems", cartItems);
   const totalAmount = useSelector((state) => state.cart.total);
   const shippingCost = 50;
   const [grandTotal, setGrandTotal] = useState(0);
-  const [stripeToken, setStripeToken] = useState([]);
   const [addresses, setAddresses] = useState(null);
   const dispatch = useDispatch();
 
@@ -37,48 +34,18 @@ function Cart() {
     if (totalAmount && shippingCost) setGrandTotal(totalAmount + shippingCost);
   }, [totalAmount, shippingCost]);
 
-  const handleToken = async (token) => {
-    setStripeToken(token);
-    console.log("token", token);
-    // const { shippingAddress } = token;
-    // console.log(shippingAddress);
-    // Create order data object
-    const orderData = {
-      // orderBy: userId,
-      items: cartItems.products.map((item) => ({
-        product: item.product._id,
-        quantity: item.quantity,
-      })),
-      totalAmount: grandTotal,
-      // shippingAddress: shippingAddress,
-    };
 
-    // Dispatch action to place the order
-    dispatch(createOrder(orderData));
+  const orderData = {
+    items: cartItems.products.map((item) => ({
+      product: item.product._id,
+      quantity: item.quantity,
+    })),
+    totalAmount: grandTotal,
   };
 
-  useEffect(() => {
-    const makeRequest = async () => {
-      try {
-        const response = await axios.post(
-          "http://localhost:7400/api/v1/payment",
-
-          {
-            tokenId: stripeToken,
-            totalAmount: grandTotal,
-            // shippingAddress,
-          },
-          {
-            withCredentials: true,
-          }
-        );
-        // console.log(response.data);
-      } catch (error) {
-        console.log("Error:", error.response.data);
-      }
-    };
-    stripeToken && makeRequest();
-  }, [stripeToken, grandTotal]);
+  const handleCheckout = () => {
+    dispatch(createOrder(orderData));
+  };
 
   console.log("cartItems", cartItems);
   return (
@@ -124,22 +91,12 @@ function Cart() {
                 Total <span className="text-xl font-bold">₹{grandTotal}</span>
               </p>
 
-              <StripeCheckout
-                name="Trend Bazaar"
-                description={`Your total is ₹${grandTotal}`}
-                amount={grandTotal * 100}
-                token={handleToken}
-                stripeKey={
-                  "pk_test_51P2omZSG1lj88Ohi6FsfqCEbOc5qaIkM8hUq4I4sVdoJAJ9BxBHPxD33oh0bSSJsK42M479hmROJnYJjZjZQ4Egk00mQBFwdA8"
-                }
-                currency="INR"
-                billingAddress
-                shippingAddress
+              <button
+                onClick={handleCheckout}
+                className="self-center w-full transform-transition duration-9000 flex items-center justify-center gap-1 px-4 py-3 text-base rounded-sm text-white bg-black hover:bg-teal-950 transform-transition duration-1000 hover:drop-shadow-lg"
               >
-                <button className="self-center w-full transform-transition duration-9000 flex items-center justify-center gap-1 px-4 py-3 text-base rounded-sm text-white bg-black hover:bg-teal-950 transform-transition duration-1000 hover:drop-shadow-lg">
-                  Proceed to checkout
-                </button>
-              </StripeCheckout>
+                Proceed to checkout
+              </button>
             </div>
           </div>
         ) : (

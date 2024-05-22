@@ -11,7 +11,6 @@ const createProduct = asyncHandler(async (req, res) => {
   try {
     const { name, description, category, oldPrice, newPrice } = req.body;
     const productImageLocalPath = req.file?.path;
-    console.log("productImageLocalPath", productImageLocalPath);
 
     if (
       !name ||
@@ -25,7 +24,6 @@ const createProduct = asyncHandler(async (req, res) => {
     }
 
     const productImage = await uploadOnCloudinary(productImageLocalPath);
-    console.log("productImage", productImage);
 
     if (!productImage.url) {
       throw new ApiError(400, "Error while uploading product image");

@@ -8,24 +8,10 @@ function Home() {
   return (
     <Layout>
       <div className="min-h-full">
-        <div className="flex flex-wrap gap-2">
-          <Link to="/about">About</Link>
-          <Link to="/contact">contact</Link>
-          <Link to="/signup">signup</Link>
-          <Link to="/login">login</Link>
-          <Link to="/profile">profile</Link>
-          <Link to="/admin">admin</Link>
-          <Link to="/products">products</Link>
-          <Link to="/admin/add-product">add-product</Link>
-          <Link to="/admin/update-product">update-product</Link>
-          <Link to="/update-profile">update-profile</Link>
-          <Link to="/cart">cart</Link>
-          <Link to="/checkout">checkout</Link>
-          <Link to="/products/:id">products id</Link>
+        <div className="flex">
+          <Link to="/admin">Admin</Link>
         </div>
-
-        {/* Hero Section */}
-        <section className="bg-gray-200 py-16">
+        {/* <section className="bg-gray-200 py-16">
           <div className="container mx-auto">
             <div className="text-center">
               <h2 className="text-4xl font-bold mb-4">Welcome to our Store!</h2>
@@ -34,33 +20,13 @@ function Home() {
               </p>
             </div>
           </div>
-        </section>
+        </section> */}
 
         <HomeDesignerSection />
         <ExploreMoreButton />
         <BestFeatureSection />
-        <NewsletterFeatureSection/>
-        {/* Content Section */}
-        <section className="py-16">
-          <div className="container mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-2xl font-bold mb-4">Our Products</h3>
-                <p className="text-lg">
-                  Explore a wide range of products including electronics,
-                  clothing, accessories, and more.
-                </p>
-              </div>
-              <div>
-                <img
-                  src="/images/products.jpg"
-                  alt="Products"
-                  className="rounded-lg"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+        <NewsletterFeatureSection />
+        
       </div>
     </Layout>
   );

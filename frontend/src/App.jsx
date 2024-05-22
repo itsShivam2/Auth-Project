@@ -21,6 +21,9 @@ import UpdateProfile from "./pages/updateProfile/UpdateProfile";
 import Cart from "./pages/cart/Cart";
 import Checkout from "./pages/checkout/Checkout";
 import NotFound from "./pages/notFound/NotFound";
+import PaymentSuccess from "./pages/paymentSuccess/PaymentSuccess";
+import OrderDetails from "./pages/orderDetails/OrderDetails";
+import WishList from "./pages/wishlist/Wishlist";
 import axios from "axios";
 import { setUser } from "./redux/user/userSlice";
 const App = () => {
@@ -90,33 +93,20 @@ const App = () => {
         />
         <Route path="/products" element={<Products />} />
         <Route path="/products/:id" element={<ProductItemPage />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="*" element={<NotFound />} />
-
-        {/*  */}
-        {/* <Route element={<PersistLogin />}> */}
-        {/* <Route path="/profile" element={<User />} />
-        <Route path="/update-profile" element={<UpdateProfile />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/success" element={<Success />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/admin/add-product" element={<AddProduct />} />
-        <Route
-          path="/products/:id/update-product"
-          element={<UpdateProduct />}
-        /> */}
-        {/* </Route> */}
-        {/*  */}
 
         {isAuthenticated && (
           <>
             <Route path="/profile" element={<User />} />
             <Route path="/update-profile" element={<UpdateProfile />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/paymentsuccess" element={<PaymentSuccess />} />
+            <Route path="/orders/:id" element={<OrderDetails />} />
+            <Route path="/wishlist" element={<WishList />} />
             <Route path="/checkout" element={<Checkout />} />
           </>
         )}
 
-        {isAdmin && (
+        {isAuthenticated && isAdmin && (
           <>
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/add-product" element={<AddProduct />} />
@@ -124,8 +114,6 @@ const App = () => {
               path="/products/:id/update-product"
               element={<UpdateProduct />}
             />
-            <Route path="/signup" element={<Home />} />
-            <Route path="/login" element={<Home />} />
           </>
         )}
 
@@ -134,8 +122,10 @@ const App = () => {
         )}
 
         {isAuthenticated && !isAdmin && (
-          <Route path="/admin/*" element={<Navigate to="/" replace />} />
+          <Route path="/admin" element={<Navigate to="/" replace />} />
         )}
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );

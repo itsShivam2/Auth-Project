@@ -1,11 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
+import {
+  loadCartFromLocalStorage,
+  saveCartToLocalStorage,
+} from "../../utility/localStorageUtil";
 
-const initialState = {
+const persistedCart = loadCartFromLocalStorage();
+
+const initialState = persistedCart || {
   products: [],
   quantity: 0,
   total: 0,
   loading: false,
   error: null,
+};
+
+const saveCartState = (state) => {
+  saveCartToLocalStorage(state);
 };
 
 export const cartSlice = createSlice({
@@ -31,6 +41,7 @@ export const cartSlice = createSlice({
         0
       );
       state.total = action.payload.totalAmount;
+      saveCartState(state);
     },
     addProductToCart: (state, action) => {
       const { product, quantity } = action.payload;
@@ -46,6 +57,7 @@ export const cartSlice = createSlice({
 
       state.quantity += quantity;
       state.total += product.newPrice * quantity;
+      saveCartState(state);
     },
     updateItemQuantity: (state, action) => {
       const { productId, quantity } = action.payload;
@@ -57,6 +69,7 @@ export const cartSlice = createSlice({
         state.total += difference * item.product.newPrice;
         item.quantity = quantity;
         state.quantity += difference;
+        saveCartState(state);
       }
     },
     removeItem: (state, action) => {
@@ -69,12 +82,15 @@ export const cartSlice = createSlice({
           state.products[index].price * state.products[index].quantity;
         state.quantity -= state.products[index].quantity;
         state.products.splice(index, 1);
+        saveCartState(state);
       }
     },
     clearCart: (state) => {
       state.products = [];
       state.quantity = 0;
       state.total = 0;
+      saveCartToLocalStorage(state);
+      saveCartState(state);
     },
   },
 });
