@@ -10,7 +10,7 @@ const ProductDetails = ({ productId, onClose }) => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:7400/api/v1/product/${productId}`,
+          `https://auth-project-tw37.onrender.com/api/v1/product/${productId}`,
           {
             withCredentials: true,
           }

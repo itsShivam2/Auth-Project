@@ -14,7 +14,7 @@ function Wishlist() {
       try {
         setLoading(true);
         const response = await axios.get(
-          "http://localhost:7400/api/v1/user/wishlist",
+          "https://auth-project-tw37.onrender.com/api/v1/user/wishlist",
           { withCredentials: true }
         );
         if (response.status === 200) {

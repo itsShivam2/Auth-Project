@@ -39,7 +39,7 @@ function AddProduct() {
       formDataToSend.append("productImage", formData.productImage);
 
       const response = await axios.post(
-        "http://localhost:7400/api/v1/product/create-product",
+        "https://auth-project-tw37.onrender.com/api/v1/product/create-product",
         formDataToSend,
         { withCredentials: true }
       );

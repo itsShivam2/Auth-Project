@@ -12,7 +12,7 @@ const OrdersTab = () => {
     const fetchOrders = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:7400/api/v1/order/all-orders",
+          "https://auth-project-tw37.onrender.com/api/v1/order/all-orders",
           {
             withCredentials: true,
           }
@@ -121,7 +121,7 @@ const OrdersTab = () => {
 
   async function handleDeleteOrder(orderId) {
     try {
-      await axios.delete(`http://localhost:7400/api/v1/order/${orderId}`, {
+      await axios.delete(`https://auth-project-tw37.onrender.com/api/v1/order/${orderId}`, {
         withCredentials: true,
       });
       setOrders(orders.filter((order) => order._id !== orderId));

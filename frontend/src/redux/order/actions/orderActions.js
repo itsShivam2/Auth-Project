@@ -6,7 +6,7 @@ export const fetchOrders = () => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.get(
-      "http://localhost:7400/api/v1/order/all-orders"
+      "https://auth-project-tw37.onrender.com/api/v1/order/all-orders"
     );
     dispatch(setOrders(response.data.orders));
   } catch (error) {
@@ -18,7 +18,7 @@ export const fetchOrder = (orderId) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.get(
-      `http://localhost:7400/api/v1/order/${orderId}`,
+      `https://auth-project-tw37.onrender.com/api/v1/order/${orderId}`,
       { withCredentials: true }
     );
     dispatch(setOrder(response.data.data));
@@ -31,7 +31,7 @@ export const createOrder = (orderData) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.post(
-      "http://localhost:7400/api/v1/order/create-order",
+      "https://auth-project-tw37.onrender.com/api/v1/order/create-order",
       orderData,
       {
         withCredentials: true,
@@ -51,7 +51,7 @@ export const updateOrder = (orderId, updatedData) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.put(
-      `http://localhost:7400/api/v1/order/${orderId}`,
+      `https://auth-project-tw37.onrender.com/api/v1/order/${orderId}`,
       updatedData
     );
     dispatch(fetchOrders());
@@ -65,7 +65,7 @@ export const deleteOrder = (orderId) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.delete(
-      `http://localhost:7400/api/v1/order/${orderId}`
+      `https://auth-project-tw37.onrender.com/api/v1/order/${orderId}`
     );
     dispatch(fetchOrders());
   } catch (error) {

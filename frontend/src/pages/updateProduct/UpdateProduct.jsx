@@ -24,7 +24,7 @@ function UpdateProduct() {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:7400/api/v1/product/${id}`
+          `https://auth-project-tw37.onrender.com/api/v1/product/${id}`
         );
         const product = response.data.data;
         setFormData({
@@ -33,7 +33,7 @@ function UpdateProduct() {
           category: product.category,
           oldPrice: product.oldPrice,
           newPrice: product.newPrice,
-          productImage: null, // Since we're not updating the image here
+          productImage: null, 
         });
       } catch (error) {
         console.error("Error fetching product:", error);
@@ -60,7 +60,7 @@ function UpdateProduct() {
       formDataToSend.append("productImage", formData.productImage);
 
       const response = await axios.put(
-        `http://localhost:7400/api/v1/product/${id}`,
+        `https://auth-project-tw37.onrender.com/api/v1/product/${id}`,
         formDataToSend,
         {
           withCredentials: true,

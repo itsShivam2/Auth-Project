@@ -10,7 +10,7 @@ const OrderDetails = ({ orderId, onClose }) => {
     const fetchOrder = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:7400/api/v1/order/${orderId}`,
+          `https://auth-project-tw37.onrender.com/api/v1/order/${orderId}`,
           {
             withCredentials: true,
           }

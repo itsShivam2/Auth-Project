@@ -14,7 +14,7 @@ function User() {
   const fetchUser = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:7400/api/v1/user/profile",
+        "https://auth-project-tw37.onrender.com/api/v1/user/profile",
         { withCredentials: true }
       );
       if (response.status === 200) {
@@ -31,7 +31,7 @@ function User() {
     try {
       setLoading(true);
       const response = await axios.get(
-        "http://localhost:7400/api/v1/order/user/orders",
+        "https://auth-project-tw37.onrender.com/api/v1/order/user/orders",
         { withCredentials: true }
       );
       if (response.status === 200) {

@@ -6,7 +6,7 @@ export const signup = (userData, onSuccess, onFailure) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.post(
-      "http://localhost:7400/api/v1/auth/signup",
+      "https://auth-project-tw37.onrender.com/api/v1/auth/signup",
       userData,
       { withCredentials: true }
     );
@@ -29,7 +29,7 @@ export const login = (formData) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.post(
-      "http://localhost:7400/api/v1/auth/login",
+      "https://auth-project-tw37.onrender.com/api/v1/auth/login",
       formData,
       { withCredentials: true }
     );
@@ -51,7 +51,7 @@ export const logout = () => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.post(
-      "http://localhost:7400/api/v1/auth/logout",
+      "https://auth-project-tw37.onrender.com/api/v1/auth/logout",
       null,
       { withCredentials: true }
     );
@@ -70,7 +70,7 @@ export const logout = () => async (dispatch) => {
 export const refreshToken = () => async (dispatch) => {
   try {
     const response = await axios.post(
-      "http://localhost:7400/api/v1/auth/refresh-token",
+      "https://auth-project-tw37.onrender.com/api/v1/auth/refresh-token",
       {},
       { withCredentials: true }
     );
@@ -93,8 +93,9 @@ export const updatePassword = (passwordData) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.post(
-      "http://localhost:7400/api/v1/auth/update-password",
-      passwordData, {withCredentials: true}
+      "https://auth-project-tw37.onrender.com/api/v1/auth/update-password",
+      passwordData,
+      { withCredentials: true }
     );
     console.log(response.data);
   } catch (error) {
@@ -107,7 +108,7 @@ export const fetchProfileDetails = (userId) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.get(
-      "http://localhost:7400/api/v1/user/profile",
+      "https://auth-project-tw37.onrender.com/api/v1/user/profile",
       { withCredentials: true }
     );
     if (response.status === 200) {
