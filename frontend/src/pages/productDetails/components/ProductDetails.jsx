@@ -10,7 +10,7 @@ function ProductDetails({ product }) {
     const checkWishlist = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:7400/api/v1/user/wishlist`,
+          `https://auth-project-tw37.onrender.com/api/v1/user/wishlist`,
           { withCredentials: true }
         );
         const wishlist = response.data.data;
@@ -26,7 +26,7 @@ function ProductDetails({ product }) {
   const addToWishlist = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:7400/api/v1/user/wishlist/${product._id}`,
+        `https://auth-project-tw37.onrender.com/api/v1/user/wishlist/${product._id}`,
         {},
         { withCredentials: true }
       );

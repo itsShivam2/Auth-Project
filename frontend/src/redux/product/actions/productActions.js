@@ -13,7 +13,7 @@ export const fetchProducts = () => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.get(
-      "http://localhost:7400/api/v1/product/all-products"
+      "https://auth-project-tw37.onrender.com/api/v1/product/all-products"
     );
     dispatch(setProducts(response.data.data));
   } catch (error) {
@@ -27,7 +27,7 @@ export const fetchProduct = (id) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.get(
-      `http://localhost:7400/api/v1/product/${id}`
+      `https://auth-project-tw37.onrender.com/api/v1/product/${id}`
     );
     dispatch(setProduct(response.data.data));
   } catch (error) {
@@ -41,7 +41,7 @@ export const createProduct = (productData) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.post(
-      "http://localhost:7400/api/v1/product/create-product",
+      "https://auth-project-tw37.onrender.com/api/v1/product/create-product",
       productData
     );
     dispatch(addProduct(response.data));
@@ -56,7 +56,7 @@ export const updateProductDetails = (id, updatedData) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.put(
-      `http://localhost:7400/api/v1/product/${id}`,
+      `https://auth-project-tw37.onrender.com/api/v1/product/${id}`,
       updatedData
     );
     dispatch(updateProduct(response.data));
@@ -70,7 +70,7 @@ export const updateProductDetails = (id, updatedData) => async (dispatch) => {
 export const removeProduct = (id) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
-    await axios.delete(`http://localhost:7400/api/v1/product/${id}`);
+    await axios.delete(`https://auth-project-tw37.onrender.com/api/v1/product/${id}`);
     dispatch(deleteProduct(id));
   } catch (error) {
     dispatch(

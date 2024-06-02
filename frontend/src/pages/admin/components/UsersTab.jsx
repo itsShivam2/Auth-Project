@@ -12,7 +12,7 @@ const UsersTab = () => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:7400/api/v1/user/all-users",
+          "https://auth-project-tw37.onrender.com/api/v1/user/all-users",
           {
             withCredentials: true,
           }
@@ -101,7 +101,7 @@ const UsersTab = () => {
 
   async function handleDeleteUser(userId) {
     try {
-      await axios.delete(`http://localhost:7400/api/v1/user/${userId}`, {
+      await axios.delete(`https://auth-project-tw37.onrender.com/api/v1/user/${userId}`, {
         withCredentials: true,
       });
       setUsers(users.filter((user) => user._id !== userId));

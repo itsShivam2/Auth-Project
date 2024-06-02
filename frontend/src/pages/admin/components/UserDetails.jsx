@@ -10,7 +10,7 @@ const UserDetails = ({ userId, onClose }) => {
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:7400/api/v1/user/${userId}`,
+          `https://auth-project-tw37.onrender.com/api/v1/user/${userId}`,
           {
             withCredentials: true,
           }

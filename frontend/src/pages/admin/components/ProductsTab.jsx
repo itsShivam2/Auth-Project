@@ -11,7 +11,7 @@ const ProductsTab = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:7400/api/v1/product/all-products', {
+        const response = await axios.get('https://auth-project-tw37.onrender.com/api/v1/product/all-products', {
           withCredentials: true,
         });
         setProducts(response.data.data);
@@ -76,7 +76,7 @@ const ProductsTab = () => {
 
   async function handleDeleteProduct(productId) {
     try {
-      await axios.delete(`http://localhost:7400/api/v1/products/${productId}`, {
+      await axios.delete(`https://auth-project-tw37.onrender.com/api/v1/products/${productId}`, {
         withCredentials: true,
       });
       setProducts(products.filter(product => product._id !== productId));
