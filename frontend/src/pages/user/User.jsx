@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useSelector } from "react-redux";
-import Layout from "../../components/layout/Layout";
 import { Link } from "react-router-dom";
+import Loader from "../../components/loader/Loader";
+import Layout from "../../components/layout/Layout";
+import {FiUser} from "react-icons/fi"
+
 function User() {
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({});
   const [orders, setOrders] = useState([]);
   const [error, setError] = useState({});
@@ -27,12 +29,13 @@ function User() {
 
   const fetchOrder = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
         "http://localhost:7400/api/v1/order/user/orders",
         { withCredentials: true }
       );
       if (response.status === 200) {
-        console.log("user order", response.data);
+        setLoading(false);
         setOrders(response.data.data);
       }
     } catch (error) {
@@ -49,23 +52,24 @@ function User() {
   return (
     <div>
       <Layout>
-        <div className="bg-[#000814] w-full">
-          <div className="bg-[#000814] w-full flex flex-col md:flex-row items-center justify-center">
-            <div className="bg-[#111827] w-full md:w-2/5  flex flex-col justify-center p-6 shadow-md rounded-xl sm:px-12">
-              <img
+        <div className="bg-white w-full">
+          <div className="bg-white w-full flex flex-col md:flex-row items-center justify-center">
+            <div className="bg-white w-full md:w-2/5  flex flex-col justify-center p-6 shadow-md rounded-xl sm:px-12">
+              {/* <img
                 src="https://source.unsplash.com/150x150/?portrait?3"
                 alt=""
                 className="w-32 h-32 mx-auto rounded-full dark:bg-gray-500 aspect-square"
-              />
+              /> */}
+              <FiUser className="w-32 h-32 mx-auto aspect-square"/>
               <div className="space-y-4 text-center divide-y dark:divide-gray-700">
-                <div className="my-2 space-y-1">
-                  <h2 className="text-xl font-semibold sm:text-2xl text-gray-100">
+                <div className="my-2 space-y-1 font-[Montserrat]">
+                  <h2 className="text-xl font-semibold sm:text-2xl text-gray-900">
                     {user.firstName} {user.lastName}
                   </h2>
-                  <p className="px-5 text-xs sm:text-base text-gray-100">
+                  <p className="px-5 text-xs sm:text-base text-gray-900">
                     Username: <span>{user.username}</span>
                   </p>
-                  <p className="px-5 text-xs sm:text-base text-gray-100">
+                  <p className="px-5 text-xs sm:text-base text-gray-900">
                     Email ID: <span>{user.email}</span>
                   </p>
                 </div>
@@ -83,15 +87,20 @@ function User() {
           </div>
 
           <div className="mt-4">
-            <h2 className="text-xl text-center font-semibold font-[Fahkwang] sm:text-3xl text-gray-100">
+            <h2 className="text-xl text-center font-semibold font-[Fahkwang] sm:text-3xl text-gray-900">
               Orders
             </h2>
+            {loading && (
+              <div className="flex justify-center items-center h-screen">
+                <Loader />
+              </div>
+            )}
             <div className="mt-4 space-y-4">
               {orders?.length > 0 ? (
                 orders.map((order) => (
                   <div
                     key={order._id}
-                    className="bg-[#1a202c] p-4 rounded-lg shadow-md text-gray-100"
+                    className="bg-gray-100 font-[Montserrat] p-4 rounded-lg shadow-md text-gray-900"
                   >
                     <div className="mb-4 flex flex-col sm:flex-row justify-between items-center gap-4">
                       <h3 className="block text-lg font-semibold p-2">
@@ -104,34 +113,17 @@ function User() {
                     </div>
                     <div className="mb-4 flex flex-col sm:flex-row justify-between items-center gap-4">
                       <p className="block p-2">
-                        Total Amount: ${order.totalAmount}
+                        Total Amount: ₹{order.totalAmount}
                       </p>
                       <p className="block p-2">Status: {order.status}</p>
                     </div>
                     <div className="w-full mb-4 flex justify-center items-center gap-4">
                       <Link to={`/orders/${order._id}`}>
-                        <button
-                          // onClick={() =>
-                          //   (window.location.href = `/orders/${order._id}`)
-                          // }
-                          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        >
+                        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                           View Order
                         </button>
                       </Link>
                     </div>
-
-                    {/* <div className="mt-2">
-                      <h4 className="text-md font-semibold">Items:</h4>
-                      <ul className="list-disc list-inside">
-                        {order.items.map((item) => (
-                          <li key={item._id}>
-                            Product ID: {item.product} - Quantity:{" "}
-                            {item.quantity}
-                          </li>
-                        ))}
-                      </ul>
-                    </div> */}
                   </div>
                 ))
               ) : (

@@ -11,8 +11,8 @@ const Header = () => {
   const navigate = useNavigate();
   const [isUserDropdownOpen, setUserDropdownOpen] = useState(false);
   const [isNavbarLinksOpen, setNavbarLinksOpen] = useState(false);
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const isAdmin = useSelector((state) => state.auth.isAdmin);
+  const { isAuthenticated, isAdmin } = useSelector((state) => state.auth);
+
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -202,7 +202,7 @@ const Header = () => {
               <>
                 <li>
                   <Link
-                    to="/profile"
+                    to={isAdmin ? "/admin" : "/profile"}
                     className="w-full block px-4 py-2 text-sm text-left font-[Fahkwang] hover:bg-gray-600 text-gray-200 hover:text-white"
                   >
                     Profile

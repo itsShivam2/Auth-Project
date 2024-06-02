@@ -1,35 +1,23 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import ProductDetails from "./components/ProductDetails";
+import Loader from "../../components/loader/Loader";
 import { addProductToCart } from "../../redux/cart/actions/cartActions";
-import { useDispatch } from "react-redux";
+import { fetchProduct } from "../../redux/product/actions/productActions";
+import { useDispatch, useSelector } from "react-redux";
 import { FaArrowRight } from "react-icons/fa";
 
 function ProductItemPage({ match }) {
-  const [quantity, setQuantity] = useState(1);
-  const [product, setProduct] = useState(null);
-  const [error, setError] = useState("");
-  const [wishlistMessage, setWishlistMessage] = useState("");
   const { id } = useParams();
   const dispatch = useDispatch();
+  const { product, loading, error } = useSelector((state) => state.products);
+  const [quantity, setQuantity] = useState(1);
+  const [wishlistMessage, setWishlistMessage] = useState("");
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:7400/api/v1/product/${id}`,
-          { withCredentials: true }
-        );
-        setProduct(response.data.data);
-      } catch (error) {
-        console.error("Error fetching product:", error);
-      }
-    };
-
-    fetchProduct();
-  }, [id]);
+    dispatch(fetchProduct(id));
+  }, [dispatch, id]);
 
   const addToCart = () => {
     dispatch(addProductToCart({ product, quantity }));
@@ -38,6 +26,11 @@ function ProductItemPage({ match }) {
   return (
     <div>
       <Layout>
+        {loading && (
+          <div className="flex items-center justify-center w-full min-h-screen">
+            <Loader />
+          </div>
+        )}
         <div className="flex flex-col lg:flex-row items-center justify-center gap-10 px-4 py-4 max-w-screen-xl">
           {product && (
             <div className="w-full lg:w-2/5 flex items-center justify-center px-5 py-2 mx-auto">

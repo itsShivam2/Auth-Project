@@ -5,20 +5,15 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Product } from "../models/product.model.js";
 import { v4 as uuidv4 } from "uuid";
-import Stripe from "stripe";
 import dotenv from "dotenv";
 
 dotenv.config();
-
-const KEY = process.env.STRIPE_API_KEY;
-const stripe = new Stripe(KEY);
 
 // Create a new order
 const createOrder = asyncHandler(async (req, res) => {
   try {
     const { user } = req;
 
-    // Find the user by ID and populate the cart items
     const foundUser = await User.findById(user._id).populate(
       "cart.items.product"
     );
@@ -27,15 +22,12 @@ const createOrder = asyncHandler(async (req, res) => {
       throw new ApiError(404, "User not found");
     }
 
-    // Check if the user's cart is empty
     if (foundUser.cart.items.length === 0) {
       throw new ApiError(400, "Cannot create order with an empty cart");
     }
 
-    // Calculate total amount for the order (including shipping charges)
     const totalAmount = calculateTotalAmount(foundUser.cart.items) + 50;
 
-    // Create the order
     const newOrder = new Order({
       orderBy: user._id,
       items: foundUser.cart.items.map((item) => ({
@@ -47,97 +39,18 @@ const createOrder = asyncHandler(async (req, res) => {
       status: "pending",
     });
 
-    // Save the order to the database
     await newOrder.save();
 
-    // Clear user's cart
     foundUser.cart.items = [];
     foundUser.cart.totalAmount = 0;
     await foundUser.save();
 
-    // Respond with success message and the created order
     res.json(new ApiResponse(201, newOrder, "Order created successfully"));
   } catch (error) {
     console.error("Error creating order:", error);
     res.status(error.statusCode || 500).json({ message: error.message });
   }
 });
-
-// const createOrder = asyncHandler(async (req, res) => {
-//   try {
-//     const { user } = req;
-//     const { token, orderData } = req.body;
-//     console.log("user", user);
-//     console.log("orderData", orderData);
-//     // Find the user by ID and populate the cart items
-//     const foundUser = await User.findById(user._id).populate(
-//       "cart.items.product"
-//     );
-
-//     if (!foundUser) {
-//       throw new ApiError(404, "User not found");
-//     }
-
-//     // Check if the user's cart is empty
-//     if (foundUser.cart.items.length === 0) {
-//       throw new ApiError(400, "Cannot create order with an empty cart");
-//     }
-
-//     // Calculate total amount for the order (including shipping charges)
-//     const totalAmount = calculateTotalAmount(foundUser.cart.items) + 50;
-
-//     const customer = await stripe.customers.create({
-//       email: token.email,
-//       source: token.id,
-//     });
-
-//     const payment = await stripe.charges.create(
-//       {
-//         amount: totalAmount,
-//         currency: "inr",
-//         customer: customer.id,
-//         receipt_email: token.email,
-//       },
-//       {
-//         idempotencyKey: uuidv4(),
-//       }
-//     );
-//     if (payment) {
-//       // Create the order
-//       const newOrder = new Order({
-//         orderBy: user._id,
-//         items: foundUser.cart.items.map((item) => ({
-//           product: item.product._id,
-//           quantity: item.quantity,
-//         })),
-//         totalAmount,
-//         shippingAddress: {
-//           street: token.card.address_lin1,
-//           city: token.card.address_city,
-//           country: token.card.address_country,
-//           pincode: token.card.address_zip,
-//         },
-//         status: "pending",
-//         transactionId: payment.source.id,
-//       });
-
-//       // Save the order to the database
-//       await newOrder.save();
-
-//       // Clear user's cart
-//       foundUser.cart.items = [];
-//       foundUser.cart.totalAmount = 0;
-//       await foundUser.save();
-//       // Respond with success message and the created order
-//       res.json(new ApiResponse(201, newOrder, "Order placed successfully"));
-//     } else {
-//       res.json(new ApiResponse(201, payment, "Payment failed"));
-//     }
-//   } catch (error) {
-//     console.error("Error creating order:", error);
-//     res.status(error.statusCode || 500).json({ message: error.message });
-//   }
-// });
 
 // Calculate total amount based on items in the cart
 const calculateTotalAmount = (cartItems) => {
@@ -212,7 +125,6 @@ const deleteOrderById = asyncHandler(async (req, res) => {
 const getUserOrders = asyncHandler(async (req, res) => {
   try {
     const { user } = req;
-    // Find orders by user ID
     const orders = await Order.find({ orderBy: user._id });
 
     res.json(new ApiResponse(200, orders, "User orders fetched successfully"));
@@ -225,13 +137,15 @@ const getUserOrders = asyncHandler(async (req, res) => {
 // Get all orders (admin only)
 const getAllOrders = asyncHandler(async (req, res) => {
   try {
-    // Find all orders
-    const orders = await Order.find();
+    console.log("Fetching all orders");
 
+    const orders = await Order.find();
     res.json(new ApiResponse(200, orders, "All orders fetched successfully"));
   } catch (error) {
     console.error("Error fetching all orders:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 });
 

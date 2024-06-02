@@ -2,7 +2,7 @@ import { setUser, clearUser, setLoading, setError } from "../userSlice";
 import axios from "axios";
 
 // Signup action creator
-export const signup = (userData) => async (dispatch) => {
+export const signup = (userData, onSuccess, onFailure) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.post(
@@ -10,10 +10,17 @@ export const signup = (userData) => async (dispatch) => {
       userData,
       { withCredentials: true }
     );
-    console.log(response.data);
-    // Handle success scenario, such as displaying a success message to the user
+    if (response.status === 201) {
+      onSuccess(response.data.message);
+      dispatch(setLoading(false));
+      dispatch(setError(null));
+      return { success: true };
+    }
   } catch (error) {
     dispatch(setError(error.response.data.message));
+    onFailure(error.response.data.message);
+  } finally {
+    dispatch(setLoading(false));
   }
 };
 
@@ -28,31 +35,13 @@ export const login = (formData) => async (dispatch) => {
     );
     if (response.status === 200) {
       const { accessToken, username, role } = response.data;
-
-      // Extract user data from cookies
-      // const accessToken = response.headers["set-cookie"]
-      //   .find((cookie) => cookie.startsWith("accessToken"))
-      //   .split(";")[0]
-      //   .split("=")[1];
-
-      localStorage.setItem("username", username);
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("isAdmin", role === "admin" ? true : false);
-
-      // Store user data in Redux state
-      dispatch(
-        setUser({
-          accessToken,
-          isAdmin: role === "admin",
-          isAuthenticated: true,
-        })
-      );
-
+      dispatch(setUser({ accessToken, isAdmin: role === "admin", username }));
       dispatch(setLoading(false));
       return { success: true };
     }
   } catch (error) {
     dispatch(setError(error.response.data.message));
+    dispatch(setLoading(false));
     return { success: false };
   }
 };
@@ -68,13 +57,34 @@ export const logout = () => async (dispatch) => {
     );
     if (response.status === 200) {
       dispatch(clearUser());
-      localStorage.clear();
       return { success: true };
     }
   } catch (error) {
     dispatch(setError(error.response?.data?.message || "Logout failed"));
+    return { success: false };
   } finally {
     dispatch(setLoading(false));
+  }
+};
+
+export const refreshToken = () => async (dispatch) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:7400/api/v1/auth/refresh-token",
+      {},
+      { withCredentials: true }
+    );
+    if (response.status === 200) {
+      const { accessToken } = response.data;
+      dispatch(
+        setUser({
+          accessToken,
+          isAdmin: localStorage.getItem("isAdmin") === "true",
+        })
+      );
+    }
+  } catch (error) {
+    dispatch(clearUser());
   }
 };
 
@@ -84,10 +94,9 @@ export const updatePassword = (passwordData) => async (dispatch) => {
     dispatch(setLoading(true));
     const response = await axios.post(
       "http://localhost:7400/api/v1/auth/update-password",
-      passwordData
+      passwordData, {withCredentials: true}
     );
     console.log(response.data);
-    // Handle success scenario, such as displaying a success message to the user
   } catch (error) {
     dispatch(setError(error.response.data.message));
   }
@@ -98,12 +107,15 @@ export const fetchProfileDetails = (userId) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.get(
-      `http://localhost:7400/api/v1/auth/profile/${userId}`
+      "http://localhost:7400/api/v1/user/profile",
+      { withCredentials: true }
     );
-    console.log(response.data);
-    // Dispatch setUser action with the fetched profile data
-    dispatch(setUser(response.data.profile));
+    if (response.status === 200) {
+      dispatch(setLoading(false));
+      return { profile: response.data.profile, success: true };
+    }
   } catch (error) {
+    dispatch(setLoading(false));
     dispatch(setError(error.response.data.message));
   }
 };

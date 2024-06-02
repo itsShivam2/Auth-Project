@@ -3,14 +3,11 @@ import { Link } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import { HomeDesignerSection, ExploreMoreButton } from "./components/Index";
 import { BestFeatureSection } from "../../components/bestFeatureSection/Index";
-import { NewsletterFeatureSection} from "../../components/newsletterFeatureSection/Index";
+import { NewsletterFeatureSection } from "../../components/newsletterFeatureSection/Index";
 function Home() {
   return (
     <Layout>
       <div className="min-h-full">
-        <div className="flex">
-          <Link to="/admin">Admin</Link>
-        </div>
         {/* <section className="bg-gray-200 py-16">
           <div className="container mx-auto">
             <div className="text-center">
@@ -26,7 +23,6 @@ function Home() {
         <ExploreMoreButton />
         <BestFeatureSection />
         <NewsletterFeatureSection />
-        
       </div>
     </Layout>
   );

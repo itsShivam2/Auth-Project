@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../components/layout/Layout";
+import { useNavigate } from "react-router-dom";
 import CartItem from "./components/CartItem";
 import { useSelector, useDispatch } from "react-redux";
 import { createOrder } from "../../redux/order/actions/orderActions";
-import axios from "axios";
 import {
   fetchCartFromDB,
   removeItem,
   updateItemQuantity,
 } from "../../redux/cart/actions/cartActions";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Cart() {
+  const navigate = useNavigate();
   const cartItems = useSelector((state) => state.cart);
   const totalAmount = useSelector((state) => state.cart.total);
   const shippingCost = 50;
@@ -34,7 +37,6 @@ function Cart() {
     if (totalAmount && shippingCost) setGrandTotal(totalAmount + shippingCost);
   }, [totalAmount, shippingCost]);
 
-
   const orderData = {
     items: cartItems.products.map((item) => ({
       product: item.product._id,
@@ -44,15 +46,24 @@ function Cart() {
   };
 
   const handleCheckout = () => {
-    dispatch(createOrder(orderData));
+    dispatch(createOrder(orderData))
+      .then(({ success, order }) => {
+        toast.success("Order placed successfully");
+        if (success) {
+          navigate("/paymentsuccess", { state: { order } });
+        }
+      })
+      .catch((error) => {
+        toast.error("Error placing order");
+        console.error("Error creating order:", error);
+      });
   };
 
-  console.log("cartItems", cartItems);
   return (
     <div>
       <Layout>
         {cartItems.products.length > 0 ? (
-          <div className="min-h-screen max-w-screen-xl flex flex-col lg:flex-row lg:justify-between gap-4 lg:gap-0 mx-auto my-4 px-4">
+          <div className="min-h-screen max-w-screen-xl flex flex-col lg:flex-row lg:justify-between gap-4 lg:gap-0 mx-auto my-8 px-4">
             <div className="flex flex-col gap-8 lg:w-[65%]">
               {cartItems.products.map((item, index) => (
                 <CartItem

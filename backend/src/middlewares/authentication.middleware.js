@@ -19,16 +19,13 @@ export const authenticate = async (req, res, next) => {
       return res.status(401).json({ message: "Invalid token" });
     }
 
-    // Attach user information to request object
     const user = await User.findById(decoded.userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Attach the user object to the request
     req.user = user;
-    console.log("Authenticated user:", req.user);
 
     next();
   } catch (error) {

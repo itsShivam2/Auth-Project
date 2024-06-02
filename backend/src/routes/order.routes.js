@@ -15,6 +15,9 @@ const router = Router();
 // Create user order
 router.post("/create-order", authenticate, createOrder);
 
+// Get all orders from all users
+router.get("/all-orders", authenticate, adminAuth, getAllOrders);
+
 // Get user order by ID
 router.get("/:id", authenticate, getOrderById);
 
@@ -28,8 +31,5 @@ router.put("/:id", authenticate, adminAuth, updateOrderById);
 
 // Delete user order
 router.delete("/:id", authenticate, adminAuth, deleteOrderById);
-
-// Get all orders from all users
-router.get("/all-orders", authenticate, adminAuth, getAllOrders);
 
 export default router;

@@ -2,13 +2,21 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addProductToCart } from "../../../redux/cart/actions/cartActions";
+import { toast} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import * as IconsAndImages from "../../../Assets/IconsAndImages";
 
 const ProductCard = ({ product, scrollToTop }) => {
   const dispatch = useDispatch();
 
   const addToCart = () => {
-    dispatch(addProductToCart({ product, quantity: 1 }));
+    dispatch(addProductToCart({ product, quantity: 1 }))
+      .then(() => {
+        toast.success("Product added to cart");
+      })
+      .catch((error) => {
+        toast.error("Error adding product to cart");
+      });
   };
 
   return (
@@ -42,7 +50,7 @@ const ProductCard = ({ product, scrollToTop }) => {
           onClick={addToCart}
           className="flex items-center justify-center w-5/6 py-3 font-[Fahkwang] text-white font-medium text-sm rounded-lg cursor-pointer bg-gray-700 hover:bg-sky-950 transform-transition duration-900 hover:w-full transform-transition duration-1000 focus:outline-none hover:drop-shadow-lg "
         >
-          Add To Cart"
+          Add To Cart
           <IconsAndImages.BsArrowRight />
         </button>
       </div>

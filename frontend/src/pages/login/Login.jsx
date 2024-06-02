@@ -4,6 +4,7 @@ import { login } from "../../redux/user/actions/userActions";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import Input from "../../components/input/Input";
+import Spinner from "../../components/spinner/Spinner";
 import { FaUserCheck, FaLock } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -11,8 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const error = useSelector((state) => state.auth.error);
-  const loading = useSelector((state) => state.auth.loading);
+  const { loading, error } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -93,7 +93,7 @@ const Login = () => {
                 disabled={loading}
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-                {loading ? "Please wait..." : "Sign in"}
+                {loading ? <Spinner /> : "Sign in"}
               </button>
             </div>
           </form>

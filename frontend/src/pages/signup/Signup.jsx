@@ -1,16 +1,18 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-// import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signup } from "../../redux/user/actions/userActions";
+import { validateSignupForm } from "../../utility/formValidation";
 import Layout from "../../components/layout/Layout";
 import Input from "../../components/input/Input";
+import Spinner from "../../components/spinner/Spinner";
 import { FaUser, FaUserCheck, FaLock, FaCalendar } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 
 const Signup = () => {
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.auth);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -24,101 +26,40 @@ const Signup = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const validateForm = () => {
-    const errors = {};
-
-    // Validate first name
-    if (!formData.firstName.trim()) {
-      errors.firstName = "First name is required";
-    }
-
-    // Validate last name
-    if (!formData.lastName.trim()) {
-      errors.lastName = "Last name is required";
-    }
-
-    // Validate username
-    if (!formData.username.trim()) {
-      errors.username = "Username is required";
-    }
-
-    // Validate email
-    if (!formData.email.trim()) {
-      errors.email = "Email is required";
-    } else if (
-      !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)
-    ) {
-      errors.email = "Please enter a valid email address";
-    }
-
-    // Validate password
-    if (!formData.password.trim()) {
-      errors.password = "Password is required";
-    } else if (formData.password.length < 8) {
-      errors.password = "Password must be at least 8 characters long";
-    }
-
-    // Validate date of birth
-    if (!formData.dateOfBirth) {
-      errors.dateOfBirth = "Date of birth is required";
-    }
-
-    setErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      try {
-        const response = await axios.post(
-          "http://localhost:7400/api/v1/auth/signup",
+    const validationErrors = validateSignupForm(formData);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) {
+      dispatch(
+        signup(
           formData,
-          { withCredentials: true }
-        );
-        if (response.status === 201) {
-          // Signup successful
-          setSuccessMessage(response.data.message);
-
-          setFormData({
-            firstName: "",
-            lastName: "",
-            username: "",
-            email: "",
-            password: "",
-            dateOfBirth: "",
-          });
-          setErrors({});
-          setTimeout(() => {
-            navigate("/login");
-          }, 5000);
-        } else {
-          // Signup failed
-          if (response.status === 400) {
-            // Bad request (e.g., user already exists or missing fields)
-            setErrors({ message: response.data.message || "Invalid request" });
-            setErrorMessage(response.data.message);
-          } else {
-            // Other error status codes
-            setErrors({ message: "An unexpected error occurred" });
-            setErrorMessage(response.data.message);
+          (message) => {
+            setSuccessMessage(message);
+            setFormData({
+              firstName: "",
+              lastName: "",
+              username: "",
+              email: "",
+              password: "",
+              dateOfBirth: "",
+            });
+            setErrors({});
+            setTimeout(() => {
+              navigate("/login");
+            }, 5000);
+          },
+          (error) => {
+            setErrorMessage(error);
           }
-        }
-      } catch (error) {
-        console.error("Signup error:", error.message);
-        setErrors({ message: "An unexpected error occurred" });
-      }
+        )
+      );
     }
   };
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   dispatch(signup(formData));
-  // };
 
   return (
     <Layout>
@@ -220,7 +161,7 @@ const Signup = () => {
                 type="submit"
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-                Sign Up
+                {loading ? <Spinner /> : "Sign Up"}
               </button>
             </div>
           </form>

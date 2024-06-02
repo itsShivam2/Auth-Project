@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 import dotenv from "dotenv";
 
-// Load environment variables from .env file
 dotenv.config();
 
 // Signup controller
@@ -58,12 +57,11 @@ export const signup = async (req, res) => {
   }
 };
 
-//original login controller
+//Login controller
 export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Validate required fields
     if (!username || !password) {
       return res.status(400).json({
         message: "Username and password are required",
@@ -71,7 +69,6 @@ export const login = async (req, res) => {
       });
     }
 
-    // Find user by username or email
     const user = await User.findOne({
       $or: [{ username }, { email: username }],
     });
@@ -79,18 +76,16 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: "Invalid username or password" });
     }
 
-    // Validate password
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
       return res.status(401).json({ message: "Invalid username or password" });
     }
-    // Check if the user is admin
+
     const isAdmin =
       username === process.env.ADMIN_USERNAME &&
       password === process.env.ADMIN_PASSWORD;
 
-    // Generate new access and refresh tokens
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
@@ -98,17 +93,13 @@ export const login = async (req, res) => {
       res.cookie("isAdmin", true, { httpOnly: true });
     }
 
-    // Update the user's refresh token
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
-
-    // Set tokens as HttpOnly cookies
-    // TODO Later - Set cookies with or without secure flag based on the environment
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV != "development",
-      maxAge: 15 * 60 * 1000,
+      maxAge: 60 * 60 * 1000,
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -137,37 +128,32 @@ export const refreshAccessToken = async (req, res) => {
     if (!incomingRefreshToken) {
       return res.status(401).json({ message: "Unauthorized request" });
     }
-    // Verify refresh token
+
     const decoded = jwt.verify(incomingRefreshToken, process.env.JWT_SECRET);
     const userId = decoded.userId;
 
-    // Find the user by ID
     const user = await User.findById(userId);
 
     if (!user) {
       return res.status(401).json({ message: "Invalid refresh token" });
     }
 
-    // Compare the incoming refresh token with the stored refresh token
     if (incomingRefreshToken !== user.refreshToken) {
       return res
         .status(401)
         .json({ message: "Refresh token is either expired or used" });
     }
 
-    // Generate new access and refresh tokens
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
-    // Update the user's refresh token
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
 
-    // Send new access token as cookie
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV != "development",
-      maxAge: 15 * 60 * 1000,
+      maxAge: 60 * 60 * 1000,
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -195,23 +181,21 @@ export const logout = async (req, res) => {
     if (!incomingRefreshToken) {
       return res.status(401).json({ message: "Unauthorized request" });
     }
-    // Check if user is authenticated
+
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    // Remove refresh token from user
     await User.findByIdAndUpdate(
       req.user._id,
       {
-        $unset: { refreshToken: "" }, // Unset the refreshToken field
+        $unset: { refreshToken: "" },
       },
       {
         new: true,
       }
     );
 
-    // Clear cookies containing tokens
     res.clearCookie("accessToken", {
       httpOnly: true,
       secure: true,
@@ -231,7 +215,3 @@ export const logout = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
-
-

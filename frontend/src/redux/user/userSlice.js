@@ -1,12 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
+import {
+  saveAuthState,
+  loadAuthState,
+  clearAuthState,
+} from "../../utility/authUtils";
 
-const initialState = {
-  // user: null,
+const initialState = loadAuthState() || {
   isAuthenticated: false,
   isAdmin: false,
   accessToken: null,
-  // refreshToken: null,
-  //lastActivityTime: null,
   loading: false,
   error: null,
 };
@@ -16,22 +18,20 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action) => {
-      // state.user = action.payload;
       state.isAuthenticated = true;
       state.isAdmin = action.payload.isAdmin;
       state.accessToken = action.payload.accessToken;
-      // state.refreshToken = action.payload.refreshToken;
       state.loading = false;
       state.error = null;
+      saveAuthState(state);
     },
     clearUser: (state) => {
-      // state.user = null;
       state.isAuthenticated = false;
       state.isAdmin = false;
       state.accessToken = null;
-      // state.refreshToken = null;
       state.loading = false;
       state.error = null;
+      clearAuthState();
     },
     setLoading: (state, action) => {
       state.loading = action.payload;
@@ -40,9 +40,6 @@ export const userSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     },
-    // setLastActivityTime(state) {
-    //   state.lastActivityTime = Date.now(); // Update last activity time
-    // },
   },
 });
 

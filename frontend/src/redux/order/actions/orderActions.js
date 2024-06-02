@@ -1,4 +1,4 @@
-import { setOrders, setLoading, setError } from "../orderSlice";
+import { setOrders, setOrder, setLoading, setError } from "../orderSlice";
 import axios from "axios";
 
 // Fetch orders action creator
@@ -14,22 +14,18 @@ export const fetchOrders = () => async (dispatch) => {
   }
 };
 
-// Create order action creator
-// export const createOrder = (orderData, token) => async (dispatch) => {
-//   try {
-//     dispatch(setLoading(true));
-//     const response = await axios.post(
-//       "http://localhost:7400/api/v1/order/create-order",
-//       { ...orderData, token },
-//       {
-//         withCredentials: true,
-//       }
-//     );
-//     dispatch(fetchOrders());
-//   } catch (error) {
-//     dispatch(setError(error.message));
-//   }
-// };
+export const fetchOrder = (orderId) => async (dispatch) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await axios.get(
+      `http://localhost:7400/api/v1/order/${orderId}`,
+      { withCredentials: true }
+    );
+    dispatch(setOrder(response.data.data));
+  } catch (error) {
+    dispatch(setError(error.message));
+  }
+};
 
 export const createOrder = (orderData) => async (dispatch) => {
   try {
@@ -42,8 +38,11 @@ export const createOrder = (orderData) => async (dispatch) => {
       }
     );
     dispatch(fetchOrders());
+    console.log("response", response);
+    return { success: true, order: response.data.data };
   } catch (error) {
     dispatch(setError(error.message));
+    return { success: false, error: error.message };
   }
 };
 

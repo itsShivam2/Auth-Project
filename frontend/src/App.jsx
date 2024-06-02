@@ -6,6 +6,9 @@ import {
   Navigate,
 } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { setUser } from "./redux/user/userSlice";
+import { refreshToken } from "./redux/user/actions/userActions";
 import Home from "./pages/home/Home";
 import About from "./pages/about/About";
 import Contact from "./pages/contact/Contact";
@@ -24,58 +27,43 @@ import NotFound from "./pages/notFound/NotFound";
 import PaymentSuccess from "./pages/paymentSuccess/PaymentSuccess";
 import OrderDetails from "./pages/orderDetails/OrderDetails";
 import WishList from "./pages/wishlist/Wishlist";
-import axios from "axios";
-import { setUser } from "./redux/user/userSlice";
+
 const App = () => {
-  const state = useSelector((state) => state.auth);
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const isAdmin = useSelector((state) => state.auth.isAdmin);
+  const { isAuthenticated, isAdmin } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-      dispatch(setUser({ accessToken, isAuthenticated: true }));
-    }
-    const adminStatus = localStorage.getItem("isAdmin");
-    if (adminStatus) {
-      dispatch(setUser({ accessToken, isAuthenticated: true, isAdmin: true }));
-    }
-  }, []);
+    const authString = localStorage.getItem("auth");
+    if (!authString) return;
 
-  useEffect(() => {
+    let authData;
+    try {
+      authData = JSON.parse(authString);
+    } catch (error) {
+      console.error("Failed to parse auth data from localStorage", error);
+      return;
+    }
+
+    const { accessToken, isAdmin, isAuthenticated } = authData;
+
+    if (accessToken && isAuthenticated) {
+      dispatch(setUser({ accessToken, isAdmin }));
+    }
+
     const checkAuth = async () => {
       try {
-        const response = await axios.post(
-          "http://localhost:7400/api/v1/auth/refresh-token",
-          {},
-          {
-            withCredentials: true,
-          }
-        );
-        if (response.status === 200) {
-          const userData = response.data;
-          dispatch(
-            setUser({
-              ...state,
-              accessToken: userData.accessToken,
-            })
-          );
-        } else {
-          localStorage.clear();
-        }
+        await dispatch(refreshToken());
       } catch (error) {
-        console.error("Error checking authentication:", error);
-        localStorage.clear();
+        console.error("Failed to refresh token", error);
       }
     };
 
     checkAuth();
 
-    // Refresh access token periodically before it expires
-    const accessTokenRefreshInterval = setInterval(checkAuth, 15 * 60 * 1000); // Refresh every 15 minutes
-    return () => clearInterval(accessTokenRefreshInterval); // Clean up interval on component unmount
-  }, [dispatch, state.accessToken, state.isAdmin]);
+    const interval = setInterval(checkAuth, 15 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [dispatch]);
 
   return (
     <Router>
