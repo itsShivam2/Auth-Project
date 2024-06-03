@@ -18,7 +18,7 @@
 
 //   const checkLoginStatus = async () => {
 //     try {
-//       const response = await axios.get('http://localhost:7400/api/v1/auth/current-user', { withCredentials: true });
+//       const response = await axios.get('https://auth-project-tw37.onrender.com/api/v1/auth/current-user', { withCredentials: true });
 //       setUsername(response.data.username);
 //       setUserDetails(response.data);
 //       setLoggedIn(true);
@@ -31,14 +31,14 @@
 //   const handleLogin = async (e) => {
 //     e.preventDefault();
 //     try {
-//       const response = await axios.post('http://localhost:7400/api/v1/auth/login', { username, password }, { withCredentials: true });
+//       const response = await axios.post('https://auth-project-tw37.onrender.com/api/v1/auth/login', { username, password }, { withCredentials: true });
 //       setUsername(response.data.username);
 //       setLoggedIn(true);
 //       setError('');
 //       setMessage('Login successful');
 
 //       // Fetch user details after successful login
-//       const userDetailsResponse = await axios.get('http://localhost:7400/api/v1/auth/current-user', { withCredentials: true });
+//       const userDetailsResponse = await axios.get('https://auth-project-tw37.onrender.com/api/v1/auth/current-user', { withCredentials: true });
 //       setUserDetails(userDetailsResponse.data);
 //     } catch (error) {
 //       console.error('Login error:', error);
@@ -49,7 +49,7 @@
 
 //   const handleLogout = async () => {
 //     try {
-//       await axios.post('http://localhost:7400/api/v1/auth/logout', null, { withCredentials: true });
+//       await axios.post('https://auth-project-tw37.onrender.com/api/v1/auth/logout', null, { withCredentials: true });
 //       setUsername('');
 //       setUserDetails(null);
 //       setLoggedIn(false);

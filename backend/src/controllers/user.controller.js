@@ -158,22 +158,30 @@ export const getUser = async (req, res) => {
 };
 
 // Delete a user by admin
-export const deleteUserById = async (req, res) => {
+export const deleteUserById = asyncHandler(async (req, res) => {
   try {
-    const { _id } = req.user;
-    const userId = _id;
+    const userId = req.params.id;
+    const currentUserId = req.user._id;
 
     if (!userId) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(400).json({ message: "User ID is required" });
     }
 
-    // Find the user by ID
-    const user = await User.findById(userId);
+    const userToDelete = await User.findById(userId);
 
-    if (user.role === "admin")
+    if (!userToDelete) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (userToDelete.role === "admin") {
       return res.status(400).json({ message: "Cannot delete admin" });
+    }
 
-    const deletedUser = await User.deleteOne({ _id: userId }).select(
+    if (userToDelete._id.toString() === currentUserId.toString()) {
+      return res.status(400).json({ message: "Cannot delete yourself" });
+    }
+
+    const deletedUser = await User.findByIdAndDelete(userId).select(
       "-password"
     );
 
@@ -183,10 +191,10 @@ export const deleteUserById = async (req, res) => {
 
     res.status(200).json({ message: "User deleted successfully", deletedUser });
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error("Error deleting user:", error);
     res.status(500).json({ message: "Internal server error" });
   }
-};
+});
 
 // Function to access admin panel
 export const getAdminPanel = (req, res) => {

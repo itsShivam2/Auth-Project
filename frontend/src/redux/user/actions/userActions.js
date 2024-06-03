@@ -43,6 +43,8 @@ export const login = (formData) => async (dispatch) => {
     dispatch(setError(error.response.data.message));
     dispatch(setLoading(false));
     return { success: false };
+  } finally {
+    dispatch(setLoading(false));
   }
 };
 
@@ -75,11 +77,11 @@ export const refreshToken = () => async (dispatch) => {
       { withCredentials: true }
     );
     if (response.status === 200) {
-      const { accessToken } = response.data;
+      const { accessToken, role } = response.data;
       dispatch(
         setUser({
           accessToken,
-          isAdmin: localStorage.getItem("isAdmin") === "true",
+          isAdmin: role === "admin",
         })
       );
     }

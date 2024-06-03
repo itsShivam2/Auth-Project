@@ -137,8 +137,6 @@ const getUserOrders = asyncHandler(async (req, res) => {
 // Get all orders (admin only)
 const getAllOrders = asyncHandler(async (req, res) => {
   try {
-    console.log("Fetching all orders");
-
     const orders = await Order.find();
     res.json(new ApiResponse(200, orders, "All orders fetched successfully"));
   } catch (error) {
@@ -149,6 +147,39 @@ const getAllOrders = asyncHandler(async (req, res) => {
   }
 });
 
+// Update order status (admin only)
+const updateOrderStatus = asyncHandler(async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    if (
+      !status ||
+      !["pending", "processing", "shipped", "delivered"].includes(status)
+    ) {
+      throw new ApiError(400, "Invalid order status");
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      req.params.id,
+      { $set: { status } },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      throw new ApiError(404, "Order not found");
+    }
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, updatedOrder, "Order status updated successfully")
+      );
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 export {
   createOrder,
   getOrderById,
@@ -156,4 +187,5 @@ export {
   deleteOrderById,
   getUserOrders,
   getAllOrders,
+  updateOrderStatus,
 };

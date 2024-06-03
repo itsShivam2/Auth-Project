@@ -1,11 +1,17 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
+import Spinner from "../../components/spinner/Spinner";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ProductInput from "../../components/productInput/ProductInput";
+import { createProduct } from "../../redux/product/actions/productActions";
 
-function AddProduct() {
-  const isAdmin = useSelector((state) => state.auth.isAdmin);
+const AddProduct = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -16,139 +22,132 @@ function AddProduct() {
     productImage: null,
   });
 
-  const [errors, setErrors] = useState({});
-
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleImageChange = (e) => {
-    setFormData({ ...formData, productImage: e.target.files[0] });
+    if (e.target.name === "productImage") {
+      setFormData({ ...formData, productImage: e.target.files[0] });
+    } else {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("description", formData.description);
-      formDataToSend.append("category", formData.category);
-      formDataToSend.append("oldPrice", formData.oldPrice);
-      formDataToSend.append("newPrice", formData.newPrice);
-      formDataToSend.append("productImage", formData.productImage);
+      const productData = new FormData();
+      productData.append("name", formData.name);
+      productData.append("description", formData.description);
+      productData.append("category", formData.category);
+      productData.append("oldPrice", formData.oldPrice);
+      productData.append("newPrice", formData.newPrice);
+      productData.append("productImage", formData.productImage);
 
-      const response = await axios.post(
-        "https://auth-project-tw37.onrender.com/api/v1/product/create-product",
-        formDataToSend,
-        { withCredentials: true }
-      );
-
-      console.log("Product added successfully:", response.data);
-      // Optionally, redirect to a different page or show a success message
+      await dispatch(createProduct(productData));
+      toast.success("Product added successfully");
+      setTimeout(() => {
+        navigate("/");
+      }, 3000);
     } catch (error) {
-      console.error("Error adding product:", error.response.data);
-      setErrors(error.response.data.message);
+      toast.error("Failed to add product. Please try again.");
+      console.error("Add product error:", error);
     }
   };
 
   return (
-    <div>
-      <Layout>
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-md w-full space-y-8 bg-white py-8 px-3 shadow-2xl rounded-lg">
-            <div className="flex flex-col items-center">
-              <h1 className="text-4xl text-center font-[Fahkwang] font-bold text-teal-600 px-2 py-2 underline underline-offset-4 mb-4">
-                Trend Bazaar
-              </h1>
-              <h2 className="mt-1 py-2 text-center text-3xl font-extrabold text-gray-900">
-                Add Product
-              </h2>
+    <Layout>
+      <div className="bg-white">
+        <div className="flex justify-center min-h-screen py-8">
+          <div className="flex items-center w-full max-w-md px-6 mx-auto lg:w-2/6">
+            <div className="flex-1">
+              <div className="text-center">
+                <div className="flex justify-center mx-auto">
+                  <h2 className="text-2xl font-bold text-gray-900">Add Product</h2>
+                </div>
+                <p className="mt-3 text-gray-900">Fill in the details to add a new product</p>
+              </div>
+
+              <div className="mt-8">
+                {error && <div className="text-red-600">{error}</div>}
+
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                  <div className="rounded-md shadow-sm space-y-4">
+                    <ProductInput
+                      id="name"
+                      name="name"
+                      type="text"
+                      placeholder="Product Name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      error={error && "Name is required"}
+                    />
+                    <ProductInput
+                      id="description"
+                      name="description"
+                      type="text"
+                      placeholder="Product Description"
+                      value={formData.description}
+                      onChange={handleChange}
+                      required
+                      error={error && "Description is required"}
+                    />
+                    <ProductInput
+                      id="category"
+                      name="category"
+                      type="text"
+                      placeholder="Product Category"
+                      value={formData.category}
+                      onChange={handleChange}
+                      required
+                      error={error && "Category is required"}
+                    />
+                    <ProductInput
+                      id="oldPrice"
+                      name="oldPrice"
+                      type="number"
+                      placeholder="Old Price"
+                      value={formData.oldPrice}
+                      onChange={handleChange}
+                      required
+                      error={error && "Old Price is required"}
+                    />
+                    <ProductInput
+                      id="newPrice"
+                      name="newPrice"
+                      type="number"
+                      placeholder="New Price"
+                      value={formData.newPrice}
+                      onChange={handleChange}
+                      required
+                      error={error && "New Price is required"}
+                    />
+                    <ProductInput
+                      id="productImage"
+                      name="productImage"
+                      type="file"
+                      onChange={handleChange}
+                      required
+                      error={error && "Product Image is required"}
+                    />
+                  </div>
+
+                  <div className="mt-6">
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full h-10 px-4 py-2 tracking-wide text-white transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:bg-blue-400 focus:ring focus:ring-blue-300 focus:ring-opacity-50 flex justify-center items-center"
+                    >
+                      {loading ? <Spinner className="h-full" /> : "Add Product"}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
-
-            {isAdmin ? (
-              <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                <div className="rounded-md shadow-sm -space-y-px">
-                  <ProductInput
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="Product Name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    error={errors.name}
-                  />
-                  <ProductInput
-                    id="description"
-                    name="description"
-                    type="text"
-                    placeholder="Product Description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    required
-                    error={errors.description}
-                  />
-                  <ProductInput
-                    id="category"
-                    name="category"
-                    type="text"
-                    placeholder="Product Category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    required
-                    error={errors.category}
-                  />
-                  <ProductInput
-                    id="oldPrice"
-                    name="oldPrice"
-                    type="number"
-                    placeholder="Old Price"
-                    value={formData.oldPrice}
-                    onChange={handleChange}
-                    required
-                    error={errors.oldPrice}
-                  />
-                  <ProductInput
-                    id="newPrice"
-                    name="newPrice"
-                    type="number"
-                    placeholder="New Price"
-                    value={formData.newPrice}
-                    onChange={handleChange}
-                    required
-                    error={errors.newPrice}
-                  />
-                  {/* Other product input fields */}
-                  <ProductInput
-                    id="productImage"
-                    name="productImage"
-                    type="file"
-                    onChange={handleImageChange}
-                    required
-                    error={errors.productImage}
-                  />
-                </div>
-
-                <div>
-                  <button
-                    type="submit"
-                    className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Add Product
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <p className="text-center text-red-500">
-                Only admins can add products.
-              </p>
-            )}
           </div>
         </div>
-      </Layout>
-    </div>
+      </div>
+    </Layout>
   );
-}
+};
 
 export default AddProduct;

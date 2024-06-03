@@ -11,10 +11,12 @@ import {
 } from "../../redux/cart/actions/cartActions";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Loader from "../../components/loader/Loader";
 
 function Cart() {
   const navigate = useNavigate();
   const cartItems = useSelector((state) => state.cart);
+  const loading = useSelector((state) => state.order.loading);
   const totalAmount = useSelector((state) => state.cart.total);
   const shippingCost = 50;
   const [grandTotal, setGrandTotal] = useState(0);
@@ -108,16 +110,28 @@ function Cart() {
               >
                 Proceed to checkout
               </button>
+
+              {loading && (
+                <div className="flex items-center justify-center w-full mt-16">
+                  <Loader />
+                </div>
+              )}
             </div>
           </div>
         ) : (
-          <div className="min-h-[75vh] my-4 py-4">
-            <h1 className="text-4xl sm:text-5xl font-semibold font-[cursive] text-center text-teal-500 my-3">
+          <div className="min-h-[75vh] flex flex-col items-center justify-center my-4 py-4">
+            <h1 className="text-4xl sm:text-5xl font-semibold text-center text-teal-800 my-3">
               OOPS!
             </h1>
-            <h2 className="text-3xl sm:text-4xl font-semibold font-[cursive] text-center text-teal-500">
+            <h2 className="text-3xl sm:text-4xl font-semibold text-center text-teal-800">
               Your cart is empty
             </h2>
+            <button
+              onClick={() => navigate("/products")}
+              className="mt-6 px-6 py-2 bg-teal-500 text-white text-lg rounded-lg hover:bg-teal-700"
+            >
+              Go to Products
+            </button>
           </div>
         )}
       </Layout>

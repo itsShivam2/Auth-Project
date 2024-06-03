@@ -57,7 +57,7 @@ const OrderDetails = ({ orderId, onClose }) => {
       <ul>
         {order.items.map((item) => (
           <li key={item.product._id}>
-            {item.product.name} - {item.quantity} x ${item.product.newPrice}
+            {item.product.name} - {item.quantity} x ₹{item.product.newPrice}
           </li>
         ))}
       </ul>

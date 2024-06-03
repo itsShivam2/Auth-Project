@@ -205,7 +205,7 @@ const Header = () => {
                     to={isAdmin ? "/admin" : "/profile"}
                     className="w-full block px-4 py-2 text-sm text-left font-[Fahkwang] hover:bg-gray-600 text-gray-200 hover:text-white"
                   >
-                    Profile
+                    {isAdmin? "Admin" : "Profile"}
                   </Link>
                 </li>
                 <li>

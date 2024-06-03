@@ -6,6 +6,7 @@ import {
   deleteOrderById,
   getUserOrders,
   getAllOrders,
+  updateOrderStatus,
 } from "../controllers/order.controller.js";
 import { authenticate } from "../middlewares/authentication.middleware.js";
 import { adminAuth } from "../middlewares/adminAuth.middleware.js";
@@ -31,5 +32,8 @@ router.put("/:id", authenticate, adminAuth, updateOrderById);
 
 // Delete user order
 router.delete("/:id", authenticate, adminAuth, deleteOrderById);
+
+// Update order status
+router.put("/update-status/:id", authenticate, adminAuth, updateOrderStatus);
 
 export default router;

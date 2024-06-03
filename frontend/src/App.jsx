@@ -6,9 +6,9 @@ import {
   Navigate,
 } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import { setUser } from "./redux/user/userSlice";
 import { refreshToken } from "./redux/user/actions/userActions";
+import { loadAuthState } from "./utility/authUtils";
 import Home from "./pages/home/Home";
 import About from "./pages/about/About";
 import Contact from "./pages/contact/Contact";
@@ -33,34 +33,15 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const authString = localStorage.getItem("auth");
-    if (!authString) return;
-
-    let authData;
-    try {
-      authData = JSON.parse(authString);
-    } catch (error) {
-      console.error("Failed to parse auth data from localStorage", error);
-      return;
+    const authState = loadAuthState();
+    if (authState) {
+      dispatch(setUser(authState));
+      dispatch(refreshToken());
     }
 
-    const { accessToken, isAdmin, isAuthenticated } = authData;
-
-    if (accessToken && isAuthenticated) {
-      dispatch(setUser({ accessToken, isAdmin }));
-    }
-
-    const checkAuth = async () => {
-      try {
-        await dispatch(refreshToken());
-      } catch (error) {
-        console.error("Failed to refresh token", error);
-      }
-    };
-
-    checkAuth();
-
-    const interval = setInterval(checkAuth, 15 * 60 * 1000);
+    const interval = setInterval(() => {
+      dispatch(refreshToken());
+    }, 59 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, [dispatch]);

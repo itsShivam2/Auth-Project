@@ -148,7 +148,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Product not found");
   }
 
-  await product.remove();
+  await Product.deleteOne({ _id: req.params.id });
 
   res.json(new ApiResponse(200, {}, "Product deleted successfully"));
 });

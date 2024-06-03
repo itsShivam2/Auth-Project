@@ -165,6 +165,7 @@ export const refreshAccessToken = async (req, res) => {
       success: true,
       message: "Access token refreshed successfully",
       accessToken: accessToken,
+      role: user.role,
     });
   } catch (error) {
     console.error(error);
