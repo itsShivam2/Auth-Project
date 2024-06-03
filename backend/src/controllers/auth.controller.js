@@ -98,12 +98,14 @@ export const login = async (req, res) => {
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV != "development",
+      secure: true,
+      sameSite: "none",
       maxAge: 60 * 60 * 1000,
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV != "development",
+      secure: true,
+      sameSite: "none",
       maxAge: 72 * 60 * 60 * 1000,
     });
 
@@ -152,12 +154,14 @@ export const refreshAccessToken = async (req, res) => {
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV != "development",
+      secure: true,
+      sameSite: "none",
       maxAge: 60 * 60 * 1000,
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV != "development",
+      secure: true,
+      sameSite: "none",
       maxAge: 72 * 60 * 60 * 1000,
     });
 
