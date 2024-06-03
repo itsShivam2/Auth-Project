@@ -81,6 +81,10 @@ const Login = () => {
               <div className="mt-8">
                 {error && <div className="text-red-600">{error}</div>}
 
+                <span className="my-2">
+                  Use email:johndoe@example.com and password: 12345678
+                </span>
+
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                   <div className="rounded-md shadow-sm space-y-4">
                     <div>
