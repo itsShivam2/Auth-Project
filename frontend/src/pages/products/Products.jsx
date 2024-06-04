@@ -4,6 +4,7 @@ import { fetchProducts } from "../../redux/product/actions/productActions";
 import Layout from "../../components/layout/Layout";
 import { Header, CategoryButtons, ProductCard } from "./components/Index";
 import Loader from "../../components/loader/Loader";
+
 function Products() {
   const dispatch = useDispatch();
   const { products, loading, error } = useSelector((state) => state.products);

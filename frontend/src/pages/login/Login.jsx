@@ -44,7 +44,7 @@ const Login = () => {
   return (
     <Layout>
       <div className="bg-white">
-        <div className="flex justify-center min-h-screen py-8">
+        <div className="flex justify-center min-h-screen py-6">
           <div
             className="hidden bg-cover lg:block lg:w-2/3"
             style={{
@@ -68,24 +68,34 @@ const Login = () => {
           <div className="flex items-center w-full max-w-md px-6 mx-auto lg:w-2/6">
             <div className="flex-1">
               <div className="text-center">
-                <div className="flex justify-center mx-auto">
+                {/* <div className="flex justify-center mx-auto">
                   <img
                     className="w-auto h-7 sm:h-8"
                     src="https://merakiui.com/images/logo.svg"
                     alt="Trend Bazaar Logo"
                   />
-                </div>
-                <p className="mt-3 text-gray-900">Sign in to your account</p>
+                </div> */}
+                <p className="mt-3 text-2xl font-semibold font-[Fahkwang] text-gray-900">
+                  Sign in to your account
+                </p>
               </div>
 
               <div className="mt-8">
                 {error && <div className="text-red-600">{error}</div>}
 
-                <span className="my-2">
-                  Use email:johndoe@example.com and password: 12345678
-                </span>
+                <p className="my-2 flex flex-col items-center justify-center">
+                  <span className="text-sm text-teal-700 block">
+                    Use email: johndoe@example.com
+                  </span>
+                  <span className="text-sm text-teal-700 block">
+                    password: 12345678
+                  </span>
+                </p>
 
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                <form
+                  className="mt-8 space-y-6 font-[Montserrat]"
+                  onSubmit={handleSubmit}
+                >
                   <div className="rounded-md shadow-sm space-y-4">
                     <div>
                       <label
@@ -138,7 +148,7 @@ const Login = () => {
                   </div>
                 </form>
 
-                <p className="mt-6 text-base text-center text-gray-800">
+                <p className="mt-6 text-base text-center text-gray-800 font-[Montserrat]">
                   Don't have an account?{" "}
                   <Link
                     to="/signup"

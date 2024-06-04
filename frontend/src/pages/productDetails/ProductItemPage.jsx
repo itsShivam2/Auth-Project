@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import ProductDetails from "./components/ProductDetails";
 import Loader from "../../components/loader/Loader";
@@ -7,11 +7,15 @@ import { addProductToCart } from "../../redux/cart/actions/cartActions";
 import { fetchProduct } from "../../redux/product/actions/productActions";
 import { useDispatch, useSelector } from "react-redux";
 import { FaArrowRight } from "react-icons/fa";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-function ProductItemPage({ match }) {
+function ProductItemPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { product, loading, error } = useSelector((state) => state.products);
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const [quantity, setQuantity] = useState(1);
   const [wishlistMessage, setWishlistMessage] = useState("");
 
@@ -20,7 +24,18 @@ function ProductItemPage({ match }) {
   }, [dispatch, id]);
 
   const addToCart = () => {
-    dispatch(addProductToCart({ product, quantity }));
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
+    dispatch(addProductToCart({ product, quantity }))
+      .then(() => {
+        toast.success("Product added to cart");
+      })
+      .catch((error) => {
+        toast.error("Error adding product to cart: " + error.message);
+      });
   };
 
   return (

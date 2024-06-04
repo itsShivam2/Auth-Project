@@ -1,15 +1,22 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { addProductToCart } from "../../../redux/cart/actions/cartActions";
-import { toast} from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import * as IconsAndImages from "../../../Assets/IconsAndImages";
 
 const ProductCard = ({ product, scrollToTop }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   const addToCart = () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
     dispatch(addProductToCart({ product, quantity: 1 }))
       .then(() => {
         toast.success("Product added to cart");

@@ -87,7 +87,10 @@ const App = () => {
         )}
 
         {!isAuthenticated && (
-          <Route path="/profile" element={<Navigate to="/login" replace />} />
+          <>
+            <Route path="/profile" element={<Navigate to="/login" replace />} />
+            <Route path="/cart" element={<Navigate to="/login" replace />} />
+          </>
         )}
 
         {isAuthenticated && !isAdmin && (

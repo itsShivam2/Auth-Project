@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FiLogIn } from "react-icons/fi";
 import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
+import { shopaholic } from "../../Assets/IconsAndImages";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -53,11 +54,7 @@ const Header = () => {
             to="/"
             className="flex items-center space-x-3 rtl:space-x-reverse"
           >
-            <img
-              src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-              className="h-6 sm:h-8"
-              alt="Trend Bazaar"
-            />
+            <img src={shopaholic} className="h-6 sm:h-8" alt="Trend Bazaar" />
             <span className="self-center text-xl sm:text-2xl font-semibold font-[Fahkwang] whitespace-nowrap text-white">
               Trend bazaar
             </span>
@@ -205,7 +202,7 @@ const Header = () => {
                     to={isAdmin ? "/admin" : "/profile"}
                     className="w-full block px-4 py-2 text-sm text-left font-[Fahkwang] hover:bg-gray-600 text-gray-200 hover:text-white"
                   >
-                    {isAdmin? "Admin" : "Profile"}
+                    {isAdmin ? "Admin" : "Profile"}
                   </Link>
                 </li>
                 <li>
