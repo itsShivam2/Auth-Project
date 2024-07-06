@@ -1,4 +1,3 @@
-// Products.jsx
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -11,6 +10,7 @@ import Loader from "../../components/loader/Loader";
 
 function Products() {
   const dispatch = useDispatch();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { products, loading, error } = useSelector((state) => state.products);
   const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState("");
@@ -40,77 +40,85 @@ function Products() {
     <div>
       <Layout>
         <Header />
-        <div className="p-4 bg-gray-100">
-          <input
-            type="text"
-            placeholder="Search products"
-            className="border rounded p-2 w-full mb-4"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-0 sm:gap-4">
-            <select
-              className="border rounded p-2 w-full mb-4"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              <option value="">All Categories</option>
-              <option value="womens">Womens</option>
-              <option value="mens">Mens</option>
-            </select>
+        <div className="w-full flex flex-wrap flex-col sm:flex-row justify-between items-center gap-0 sm:gap-4 p-4 bg-gray-100 font-[Montserrat]">
+          <div className="w-full flex-1 mb-4 sm:mb-0">
             <input
-              type="number"
-              placeholder="Min Rating"
-              className="border rounded p-2 w-full mb-4"
-              value={minRating}
-              onChange={(e) => setMinRating(e.target.value)}
+              type="text"
+              placeholder="Search products"
+              className="border rounded p-2 w-full"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-0 sm:gap-4">
-            <input
-              type="number"
-              placeholder="Min Price"
-              className="border rounded p-2 w-full mb-4"
-              value={minPrice}
-              onChange={(e) => setMinPrice(e.target.value)}
-            />
-            <input
-              type="number"
-              placeholder="Max Price"
-              className="border rounded p-2 w-full mb-4"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-            />
-          </div>
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="w-full flex justify-between items-center gap-2">
+              <select
+                className="border rounded p-2 w-1/2"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option value="">All Categories</option>
+                <option value="womens">Womens</option>
+                <option value="mens">Mens</option>
+              </select>
 
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-0 sm:gap-4">
-            <select
-              className="border rounded p-2 w-full mb-4"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-            >
-              <option value="">Sort By</option>
-              <option value="createdAt">Date</option>
-              <option value="newPrice">Price</option>
-              <option value="rating">Rating</option>
-            </select>
-            <select
-              className="border rounded p-2 w-full mb-4"
-              value={order}
-              onChange={(e) => setOrder(e.target.value)}
-            >
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
+              <input
+                type="number"
+                placeholder="Min Rating"
+                className="border rounded p-2 w-1/2"
+                value={minRating}
+                onChange={(e) => setMinRating(e.target.value)}
+              />
+            </div>
 
-          <button
-            onClick={handleSearch}
-            className="bg-blue-500 text-white p-2 rounded"
-          >
-            Search
-          </button>
+            <div className="w-full flex justify-between items-center gap-2">
+              <input
+                type="number"
+                placeholder="Min Price"
+                className="border rounded p-2 w-1/2"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+              />
+
+              <input
+                type="number"
+                placeholder="Max Price"
+                className="border rounded p-2 w-1/2"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+              />
+            </div>
+
+            <div className="w-full flex justify-between items-center gap-2">
+              <select
+                className="border rounded p-2 w-1/2"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="">Sort By</option>
+                <option value="createdAt">Date</option>
+                <option value="newPrice">Price</option>
+                <option value="rating">Rating</option>
+              </select>
+
+              <select
+                className="border rounded p-2 w-1/2"
+                value={order}
+                onChange={(e) => setOrder(e.target.value)}
+              >
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+              </select>
+            </div>
+
+            <button
+              onClick={handleSearch}
+              className="w-full sm:w-auto bg-gray-700 text-white font-medium py-2 px-4 rounded-lg"
+            >
+              Search
+            </button>
+          </div>
         </div>
         <div className="bg-white">
           {loading ? (

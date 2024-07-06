@@ -1,7 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
-import { HomeDesignerSection, ExploreMoreButton } from "./components/Index";
+import {
+  HomeDesignerSection,
+  ExploreMoreButton,
+  FeaturedProducts,
+} from "./components/Index";
 import { BestFeatureSection } from "../../components/bestFeatureSection/Index";
 import { NewsletterFeatureSection } from "../../components/newsletterFeatureSection/Index";
 function Home() {
@@ -20,6 +24,7 @@ function Home() {
         </section> */}
 
         <HomeDesignerSection />
+        <FeaturedProducts />
         <ExploreMoreButton />
         <BestFeatureSection />
         <NewsletterFeatureSection />

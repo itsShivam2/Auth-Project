@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/Cloudinary.js";
 
 // @desc    Create a new product
-// @route   POST /api/v1/products
+// @route   POST /api/v1/product
 // @access  Private (Admin)
 const createProduct = asyncHandler(async (req, res) => {
   try {
@@ -58,7 +58,7 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get all products
-// @route   GET /api/v1/products
+// @route   GET /api/v1/product
 // @access  Public
 const getAllProducts = asyncHandler(async (req, res) => {
   const qCategory = req.query.category;
@@ -79,7 +79,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get product by ID
-// @route   GET /api/v1/products/:id
+// @route   GET /api/v1/product/:id
 // @access  Public
 const getProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
@@ -92,7 +92,7 @@ const getProduct = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update a product
-// @route   PUT /api/v1/products/:id
+// @route   PUT /api/v1/product/:id
 // @access  Private (Admin)
 const updateProduct = asyncHandler(async (req, res) => {
   try {
@@ -139,7 +139,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete a product
-// @route   DELETE /api/v1/products/:id
+// @route   DELETE /api/v1/product/:id
 // @access  Private (Admin)
 const deleteProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
@@ -154,7 +154,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 });
 
 // @desc    Search products
-// @route   GET /api/v1/products/search
+// @route   GET /api/v1/product/search
 // @access  Public
 const searchProducts = asyncHandler(async (req, res) => {
   const { name, category, minPrice, maxPrice, minRating, sortBy, order } =
@@ -166,7 +166,8 @@ const searchProducts = asyncHandler(async (req, res) => {
   }
 
   if (category) {
-    query.category = category;
+    const categoriesArray = category.split(",").map((cat) => cat.trim());
+    query.category = { $in: categoriesArray };
   }
 
   if (minPrice) {

@@ -1,8 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import * as IconsAndImages from "../../../Assets/IconsAndImages";
+import {scrollToTop} from "../../../utility/scrollToTop";
 
-function ExploreMoreButton({ scrollToTop }) {
+function ExploreMoreButton() {
   return (
     <div className="w-full flex justify-center p-8 my-8">
       <Link to="/products">
