@@ -45,7 +45,7 @@ const AddProduct = () => {
       await dispatch(createProduct(productData));
       toast.success("Product added successfully");
       setTimeout(() => {
-        navigate("/");
+        navigate("/admin");
       }, 3000);
     } catch (error) {
       toast.error("Failed to add product. Please try again.");
@@ -61,9 +61,13 @@ const AddProduct = () => {
             <div className="flex-1">
               <div className="text-center">
                 <div className="flex justify-center mx-auto">
-                  <h2 className="text-2xl font-bold text-gray-900">Add Product</h2>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Add Product
+                  </h2>
                 </div>
-                <p className="mt-3 text-gray-900">Fill in the details to add a new product</p>
+                <p className="mt-3 text-gray-900">
+                  Fill in the details to add a new product
+                </p>
               </div>
 
               <div className="mt-8">

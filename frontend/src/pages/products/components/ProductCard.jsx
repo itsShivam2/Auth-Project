@@ -33,10 +33,10 @@ const ProductCard = ({ product, scrollToTop }) => {
           <img
             src={product.productImage}
             alt={product.name}
-            className="h-full w-full object-cover object-center rounded-md lg:h-full lg:w-full  hover:scale-110 duration-500"
+            className="min-h-40 sm:min-h-max sm:min-h-auto h-full w-full object-cover object-center rounded-md lg:h-full lg:w-full  hover:scale-110 duration-500"
           />
         </div>
-        <div className="mt-4 flex flex-col sm:flex-row justify-between px-4">
+        <div className="mt-4 min-h-16 flex flex-col sm:flex-row justify-between px-4">
           <h3 className="font-[Montserrat] text-sm text-gray-900">
             {product.name}
           </h3>
@@ -49,13 +49,12 @@ const ProductCard = ({ product, scrollToTop }) => {
             </p>
           </div>
         </div>
-        ~
       </Link>
       <div className="mt-4 flex justify-center w-full px-4 pb-4">
         <button
           type="button"
           onClick={addToCart}
-          className="flex items-center justify-center w-5/6 py-3 font-[Fahkwang] text-white font-medium text-sm rounded-lg cursor-pointer bg-gray-700 hover:bg-sky-950 transform-transition duration-900 hover:w-full transform-transition duration-1000 focus:outline-none hover:drop-shadow-lg "
+          className="flex items-center justify-center w-full sm:w-5/6 px-[2px] py-3 font-[Fahkwang] text-white font-medium text-xs sm:text-sm rounded-lg cursor-pointer bg-gray-700 hover:bg-sky-950 transform-transition duration-900 hover:w-full transform-transition duration-1000 focus:outline-none hover:drop-shadow-lg "
         >
           Add To Cart
           <IconsAndImages.BsArrowRight />

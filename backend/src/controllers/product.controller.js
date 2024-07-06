@@ -153,10 +153,49 @@ const deleteProduct = asyncHandler(async (req, res) => {
   res.json(new ApiResponse(200, {}, "Product deleted successfully"));
 });
 
+// @desc    Search products
+// @route   GET /api/v1/products/search
+// @access  Public
+const searchProducts = asyncHandler(async (req, res) => {
+  const { name, category, minPrice, maxPrice, minRating, sortBy, order } =
+    req.query;
+  const query = {};
+
+  if (name) {
+    query.name = { $regex: name, $options: "i" }; // Case-insensitive search
+  }
+
+  if (category) {
+    query.category = category;
+  }
+
+  if (minPrice) {
+    query.newPrice = { ...query.newPrice, $gte: minPrice };
+  }
+
+  if (maxPrice) {
+    query.newPrice = { ...query.newPrice, $lte: maxPrice };
+  }
+
+  if (minRating) {
+    query.rating = { $gte: minRating };
+  }
+
+  let sort = {};
+  if (sortBy) {
+    sort[sortBy] = order === "desc" ? -1 : 1;
+  }
+
+  const products = await Product.find(query).sort(sort);
+
+  res.json(new ApiResponse(200, products, "Products fetched successfully"));
+});
+
 export {
   createProduct,
   getAllProducts,
   getProduct,
   updateProduct,
   deleteProduct,
+  searchProducts,
 };
