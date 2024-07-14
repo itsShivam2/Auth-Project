@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import Loader from "../../components/loader/Loader";
 import Layout from "../../components/layout/Layout";
-import {FiUser} from "react-icons/fi"
+import { FiUser } from "react-icons/fi";
 
 function User() {
   const [loading, setLoading] = useState(false);
@@ -60,7 +60,7 @@ function User() {
                 alt=""
                 className="w-32 h-32 mx-auto rounded-full dark:bg-gray-500 aspect-square"
               /> */}
-              <FiUser className="w-32 h-32 mx-auto aspect-square"/>
+              <FiUser className="w-32 h-32 mx-auto aspect-square" />
               <div className="space-y-4 text-center divide-y dark:divide-gray-700">
                 <div className="my-2 space-y-1 font-[Montserrat]">
                   <h2 className="text-xl font-semibold sm:text-2xl text-gray-900">
@@ -96,7 +96,9 @@ function User() {
               </div>
             )}
             <div className="mt-4 space-y-4">
-              {orders?.length > 0 ? (
+              {orders?.length == 0 ? (
+                <p>No orders found.</p>
+              ) : (
                 orders.map((order) => (
                   <div
                     key={order._id}
@@ -126,8 +128,6 @@ function User() {
                     </div>
                   </div>
                 ))
-              ) : (
-                <p>No orders found.</p>
               )}
             </div>
           </div>

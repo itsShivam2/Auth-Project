@@ -86,7 +86,12 @@ export const refreshToken = () => async (dispatch) => {
       );
     }
   } catch (error) {
-    dispatch(clearUser());
+    if (error.response && error.response.status === 401) {
+      dispatch(clearUser());
+      localStorage.removeItem("authState");
+    } else {
+      dispatch(clearUser());
+    }
   }
 };
 
